@@ -35,7 +35,7 @@ A Python state machine drives a visible cockpit, connectivity events, simulated 
 <table>
   <tr>
     <td width="50%"><img src="docs/images/cockpit-driving.png" alt="Cockpit at 128 km/h in Drive"><br><sub><b>Driving</b> — speed and gear streamed from the simulator to the cluster.</sub></td>
-    <td width="50%"><img src="docs/images/cluster-3d.png" alt="Unity 3D instrument cluster"><br><sub><b>Cluster 3D</b> — Unity WebGL cluster driven by the same simulator state.</sub></td>
+    <td width="50%"><img src="docs/images/cluster-3d.png" alt="Unity 3D instrument cluster driving at 103 km/h on a procedural road"><br><sub><b>Cluster 3D</b> — Unity WebGL cluster; the road scrolls with the live simulator speed.</sub></td>
   </tr>
   <tr>
     <td><img src="docs/images/validation-pass.png" alt="Validation console with all checks passed"><br><sub><b>Validation · pass</b> — phone reconnection & media recovery, 3/3 checks.</sub></td>
