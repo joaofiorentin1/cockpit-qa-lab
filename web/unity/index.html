@@ -24,6 +24,11 @@
     .hud a:hover,.hud button:hover,.hud a:focus-visible,.hud button:focus-visible{opacity:1;border-color:#1c69d4aa}
     .hud a:active,.hud button:active{transform:scale(.97)}
     .hud .right{display:flex;gap:8px}
+    /* Back link: arrow only, so it never covers the M stripe Unity draws top-left;
+       the label slides out on hover/focus. */
+    .hud .back{padding:0 11px;gap:0;background:#0b0c0e}
+    .hud .back .label{max-width:0;overflow:hidden;white-space:nowrap;transition:max-width .25s,margin .25s}
+    .hud .back:hover .label,.hud .back:focus-visible .label{max-width:160px;margin-left:8px}
     .hud .live{pointer-events:none;cursor:default}
     .live i{width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 0 #42edba88;animation:ring 2s infinite}
     body.ready .live{opacity:.8}
@@ -51,7 +56,7 @@
   <canvas id="unity-canvas" tabindex="-1"></canvas>
 
   <div class="hud">
-    <a href="/" title="Abrir o painel de controle e validação">← Painel de controle</a>
+    <a class="back" href="/" title="Abrir o painel de controle e validação" aria-label="Painel de controle"><span aria-hidden="true">←</span><span class="label">Painel de controle</span></a>
     <div class="right">
       <span class="live" aria-hidden="true"><i></i> Unity · live</span>
       <button id="fullscreen" type="button" title="Tela cheia">⛶ Tela cheia</button>
