@@ -1,0 +1,154 @@
+/* Cockpit finish, BMW Curved Display inspired. Loaded last.
+   One accent drives the whole cabin: BMW blue in Comfort, M red in Sport (body.mode-sport,
+   set by app.js at 120 km/h, same thresholds as the Unity cluster). */
+
+@property --accent{syntax:'<color>';inherits:true;initial-value:#4b8fe6}
+@property --accent-deep{syntax:'<color>';inherits:true;initial-value:#1c69d4}
+
+body{--accent:#4b8fe6;--accent-deep:#1c69d4;transition:--accent .8s var(--ease-out),--accent-deep .8s var(--ease-out)}
+body.mode-sport{--accent:#ff5a3c;--accent-deep:#e22718}
+
+/* ---------- Cabin shell ---------- */
+.dashboard{border:1px solid #ffffff14;border-radius:28px 28px 18px 18px;
+  background:
+    radial-gradient(ellipse 70% 40% at 50% 100%,color-mix(in srgb,var(--accent-deep) 16%,transparent),transparent 70%),
+    linear-gradient(180deg,#0c0e12 0%,#08090c 100%);
+  box-shadow:inset 0 1px 0 #ffffff12,0 40px 80px -40px #000}
+.dashboard:before{background:linear-gradient(#16181d,#0a0b0e 70%);box-shadow:0 14px 20px #000000b0}
+.dashboard:after{background:linear-gradient(#111317,#060709);border-top-color:#ffffff10}
+
+/* Ambient light: a thin glowing line along the dash, like BMW's interior light bar. */
+.ambient-strip{position:absolute;z-index:0;left:4%;right:4%;top:104px;height:2px;border-radius:2px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,var(--accent) 18%,color-mix(in srgb,var(--accent) 60%,#fff) 50%,var(--accent) 82%,transparent);
+  box-shadow:0 0 18px 2px color-mix(in srgb,var(--accent) 55%,transparent),0 0 46px 6px color-mix(in srgb,var(--accent-deep) 30%,transparent);
+  opacity:.9}
+
+/* ---------- Windshield: horizon, live road and the drive summary ---------- */
+.windshield{background:linear-gradient(180deg,#07080b 0%,#0c1018 55%,#0a0c10 100%);border-bottom:0}
+.windshield:before,.windshield:after{display:none}
+.drive-road{position:absolute;inset:0;overflow:hidden}
+.drive-horizon{position:absolute;left:10%;right:10%;top:52px;height:60px;border-radius:50%;
+  background:radial-gradient(ellipse at 50% 50%,color-mix(in srgb,var(--accent) 45%,transparent),transparent 70%);filter:blur(14px);opacity:.55}
+.drive-lanes{position:absolute;left:50%;top:70px;width:560px;height:220px;transform:translateX(-50%) perspective(180px) rotateX(66deg);transform-origin:50% 0;
+  -webkit-mask-image:linear-gradient(transparent,#000 35%);mask-image:linear-gradient(transparent,#000 35%);
+  background:
+    linear-gradient(90deg,transparent calc(50% - 2px),#ffffffb0 calc(50% - 2px) calc(50% + 2px),transparent calc(50% + 2px)) 0 var(--road,0)/100% 40px,
+    linear-gradient(90deg,transparent 14%,var(--accent) 14% 15%,transparent 15% 85%,var(--accent) 85% 86%,transparent 86%),
+    linear-gradient(90deg,transparent 14%,#0f131b 14% 86%,transparent 86%)}
+.drive-lanes{background-repeat:repeat-y,no-repeat,no-repeat}
+
+.drive-bar{position:absolute;left:0;right:0;top:0;height:86px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 26px 0}
+.windshield-label{position:static;color:#c9d0d8}
+.windshield-label span{color:#6f7782}
+.drive-chips{display:flex;gap:8px}
+.drive-chip{min-width:118px;padding:8px 12px;border:1px solid #ffffff14;border-radius:12px;
+  background:color-mix(in srgb,#11141a 78%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 #ffffff0d}
+.drive-chip small{display:block;font-size:7px;font-weight:700;letter-spacing:.18em;color:#6f7782}
+.drive-chip strong{display:block;margin-top:4px;font:700 12px 'Satoshi',sans-serif;letter-spacing:.08em;color:var(--text-1);transition:color .4s}
+.drive-chip-mode{border-color:color-mix(in srgb,var(--accent) 45%,transparent);box-shadow:inset 0 1px 0 #ffffff0d,0 0 22px -6px var(--accent)}
+.drive-chip-mode strong{color:var(--accent)}
+[data-tone="ok"]{color:var(--act-mint)!important}
+[data-tone="warn"]{color:#ffb547!important}
+[data-tone="fault"]{color:#ff5a4a!important}
+[data-tone="run"]{color:var(--bmw-blue-bright)!important}
+
+/* ---------- Displays: dark glass ---------- */
+.vehicle-panel,.infotainment-panel{border:1px solid #ffffff17;box-shadow:inset 0 1px 0 #ffffff14,0 18px 40px -12px #000000d0}
+.vehicle-panel{background:linear-gradient(180deg,#0b0d11,#07080b);border-radius:22px}
+.infotainment-panel{background:linear-gradient(160deg,#10131a 0%,#090a0e 70%);border-radius:22px}
+.vehicle-panel .panel-top,.infotainment-panel .panel-top{color:#6f7782}
+.vehicle-hero{background:
+    radial-gradient(ellipse 60% 55% at 50% 100%,color-mix(in srgb,var(--accent-deep) 22%,transparent),transparent 70%),
+    radial-gradient(ellipse 55% 62% at 50% 40%,#151a22 0%,#090b0f 60%,#06070a 100%)}
+.vehicle-hero:before{opacity:.12}
+
+/* ---------- Instrument cluster ---------- */
+.driver-cluster{border-top:1px solid #ffffff1f;border-radius:90px 90px 26px 26px;
+  background:radial-gradient(ellipse at 50% 110%,color-mix(in srgb,var(--accent-deep) 18%,#0d1015),#07080b 72%);
+  box-shadow:inset 0 0 30px #000,0 -10px 30px -12px color-mix(in srgb,var(--accent) 40%,transparent)}
+.cluster-head{display:flex;align-items:center}
+.cluster-mode{margin-left:auto;font:700 8px 'Satoshi',sans-serif;font-style:normal;letter-spacing:.2em;color:var(--accent);
+  padding:3px 8px;border:1px solid color-mix(in srgb,var(--accent) 50%,transparent);border-radius:20px}
+.cluster-readouts{justify-content:space-between;padding:0 6%;margin-top:-6px}
+
+.speedo{position:relative;width:150px;height:150px}
+.speed-arc{position:absolute;inset:0;width:100%;height:100%;transform:rotate(135deg);overflow:visible}
+.speed-arc circle{fill:none;stroke-linecap:round}
+.arc-track{stroke:#ffffff14;stroke-width:5;stroke-dasharray:395.8 527.8}
+.arc-fill{stroke:var(--accent);stroke-width:7;stroke-dasharray:calc(var(--speed) * 395.8px) 527.8px;
+  filter:drop-shadow(0 0 6px var(--accent))}
+.speedo-value{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.speedo-value strong{font:500 52px 'Satoshi',sans-serif!important;line-height:1!important;letter-spacing:-.03em;color:#fff!important;
+  text-shadow:0 0 22px color-mix(in srgb,var(--accent) 60%,transparent)!important}
+.speedo-value small{margin-top:4px;font-size:9px!important;letter-spacing:.2em!important;color:#8a93a3!important}
+
+.gearbox{display:flex;flex-direction:column;align-items:center;gap:8px}
+.cluster-gear{width:auto!important;height:auto!important;border:0!important;box-shadow:none!important;border-radius:0;
+  font:600 54px 'Satoshi',sans-serif!important;line-height:1;color:var(--accent)!important;
+  text-shadow:0 0 22px color-mix(in srgb,var(--accent) 70%,transparent)}
+.prnd{display:flex;gap:12px}
+.prnd span{font:700 12px 'Satoshi',sans-serif;letter-spacing:.04em;color:#4a505b;position:relative;transition:color .3s}
+.prnd span.active{color:#fff}
+.prnd span.active:after{content:'';position:absolute;left:-2px;right:-2px;bottom:-5px;height:2px;border-radius:2px;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.cluster-bars span{background:linear-gradient(90deg,var(--accent-deep),var(--accent)) 0/calc(var(--speed)*100%) 100% no-repeat,#ffffff10!important}
+.cluster-foot{color:#5f6672}
+.cluster-head span{color:var(--act-mint)}
+
+/* Steering wheel: darker, with the M-coloured top marker kept. */
+.steering-wheel{border-color:#060708;box-shadow:inset 0 0 0 4px #24262a,inset 0 0 0 8px #060708,0 16px 26px #000000e0,0 0 0 1px #3a3d42}
+.wheel-hub{background:linear-gradient(#24262b,#0f1013);border-color:#3e4148}
+.wheel-spoke{background:linear-gradient(#24262b,#101114);border-color:#3a3d42}
+
+/* ---------- Status row under the cluster ---------- */
+.vehicle-metrics{background:#08090c!important;border-top:1px solid #ffffff10!important}
+.vehicle-metrics .metric{border-color:#ffffff0d!important}
+.metric small{color:#5f6672}
+
+/* ---------- Infotainment cards ---------- */
+.projection-card{border-color:#ffffff17;border-radius:14px;background:linear-gradient(110deg,#171b23,#10131a 70%)}
+.music-card{border-color:#ffffff12;border-radius:14px;background:#0c0e13}
+.connection-row{border-top-color:#ffffff12}
+
+/* ---------- Climate console ---------- */
+.dashboard{grid-template-rows:auto 158px}
+.center-console{display:flex;flex-direction:column;justify-content:space-between;padding:12px 14px 10px;border:1px solid #ffffff14;border-radius:18px;
+  background:linear-gradient(180deg,#10131a,#08090c);box-shadow:inset 0 1px 0 #ffffff12,0 14px 30px -10px #000}
+.climate{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+.zone{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.zone-temp{text-align:center;line-height:1}
+.zone-temp strong{display:inline-block;font:500 32px 'Satoshi',sans-serif;letter-spacing:-.03em;color:#fff;font-variant-numeric:tabular-nums}
+.zone-temp sup{font-size:11px;color:#8a93a3;margin-left:2px;vertical-align:top}
+.zone-temp small{display:block;margin-top:6px;font-size:7px;font-weight:700;letter-spacing:.2em;color:#5f6672}
+.clim-btn{width:30px;height:30px;flex:none;border-radius:50%;border:1px solid #ffffff1c;background:#151922;color:#d6dbe3;font:500 16px 'Satoshi',sans-serif;line-height:1;cursor:pointer;
+  transition:background .2s,border-color .2s,transform .15s var(--ease-out),box-shadow .2s}
+.clim-btn:hover{border-color:var(--accent);box-shadow:0 0 12px -2px var(--accent)}
+.clim-btn:active{transform:scale(.92)}
+.clim-btn.small{width:22px;height:22px;font-size:12px}
+.climate-center{display:flex;flex-direction:column;align-items:center;gap:9px}
+.fan{display:flex;align-items:center;gap:8px}
+.fan-bars{display:flex;align-items:flex-end;gap:3px;height:16px}
+.fan-bars i{width:5px;border-radius:2px;background:#ffffff18;transition:background .25s,box-shadow .25s}
+.fan-bars i:nth-child(1){height:5px}.fan-bars i:nth-child(2){height:8px}.fan-bars i:nth-child(3){height:11px}.fan-bars i:nth-child(4){height:14px}.fan-bars i:nth-child(5){height:16px}
+.fan-bars i.on{background:var(--accent);box-shadow:0 0 6px color-mix(in srgb,var(--accent) 70%,transparent)}
+.climate-toggles{display:flex;gap:5px}
+.clim-toggle{padding:4px 8px;border-radius:8px;border:1px solid #ffffff17;background:transparent;color:#6f7782;font:700 8px 'Satoshi',sans-serif;letter-spacing:.14em;cursor:pointer;transition:color .2s,border-color .2s,background .2s}
+.clim-toggle.on{color:#fff;border-color:color-mix(in srgb,var(--accent) 60%,transparent);background:color-mix(in srgb,var(--accent) 16%,transparent)}
+.console-strip{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid #ffffff0d;font-size:7px;font-weight:700;letter-spacing:.2em;color:#4a505b}
+.console-strip .hazard{font-size:13px;color:#e2271899;letter-spacing:0}
+
+/* ---------- Gear selector and slider follow the accent ---------- */
+.gear-selector button.active{background:var(--accent-deep);border-color:var(--accent-deep);box-shadow:0 0 16px color-mix(in srgb,var(--accent) 45%,transparent)}
+.speed-control input[type=range]{background:linear-gradient(90deg,var(--accent-deep),var(--accent)) 0/var(--fill,0%) 100% no-repeat,#26282d}
+
+@media(max-width:1180px){.drive-chip{min-width:96px}.drive-chips .drive-chip:nth-child(2){display:none}}
+@media(max-width:900px){.dashboard{grid-template-rows:auto auto auto}.center-console{height:auto}}
+@media(max-width:700px){.drive-chips{display:none}.speedo{width:120px;height:120px}.speedo-value strong{font-size:40px!important}.cluster-gear{font-size:40px!important}}
+@media(max-width:540px){.zone-temp strong{font-size:24px}.clim-btn{width:26px;height:26px}}
+
+/* Fill the panels' full height instead of leaving a gap under their content. */
+.vehicle-panel{display:flex;flex-direction:column}
+.vehicle-panel .vehicle-hero{flex:1;min-height:305px}
+.climate{flex:1}
+/* A zero-length round-capped stroke still draws a dot: hide the fill at 0 km/h. */
+.arc-fill{opacity:clamp(0,calc(var(--speed) * 60),1)}
+.music-card.playing .progress-track span{background:linear-gradient(90deg,var(--accent-deep),var(--accent),var(--accent-deep)) 0 0/200% 100%}

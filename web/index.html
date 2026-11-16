@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="/android.css">
   <link rel="stylesheet" href="/brand.css">
   <link rel="stylesheet" href="/motion.css">
+  <link rel="stylesheet" href="/cockpit.css">
 </head>
 <body>
   <div class="app-shell">
@@ -47,7 +48,8 @@
       <section class="page active" id="cockpit-page">
         <div class="intro-row"><div><h2>BMW M4 <em>Simulation</em><img class="title-m" src="/assets/logos/bmw-m.svg" alt="BMW M"></h2><p>Digital cockpit · infotainment validation environment</p></div><span class="build-tag">BUILD 01.0 · PYTHON ENGINE</span></div>
         <div class="dashboard">
-          <div class="windshield"><div class="windshield-sky"></div><div class="road road-left"></div><div class="road road-right"></div><div class="windshield-label">BMW M4 · DIGITAL TEST COCKPIT <span>SIMULATED ENVIRONMENT</span></div></div>
+          <div class="windshield"><div class="drive-road" aria-hidden="true"><span class="drive-horizon"></span><span class="drive-lanes"></span></div><div class="drive-bar"><div class="windshield-label">BMW M4 · DIGITAL TEST COCKPIT <span>SIMULATED ENVIRONMENT</span></div><div class="drive-chips"><div class="drive-chip drive-chip-mode"><small>DRIVE MODE</small><strong id="drive-mode">COMFORT</strong></div><div class="drive-chip"><small>CONNECTIVITY</small><strong id="drive-links">3/3 ONLINE</strong></div><div class="drive-chip"><small>LAST VALIDATION</small><strong id="drive-test">NO RUN YET</strong></div></div></div></div>
+          <div class="ambient-strip" aria-hidden="true"></div>
           <section class="vehicle-panel">
             <div class="panel-top"><span>VEHICLE STATUS</span><span class="signal-id">CAN SIM / 0x001</span></div>
             <div class="vehicle-hero">
@@ -75,7 +77,7 @@
                 <circle cx="657" cy="296" r="50" fill="#0b0b0c" stroke="#3a3b3e" stroke-width="7"/><circle cx="657" cy="296" r="35" fill="#8c8f93" stroke="#18191b" stroke-width="6"/><circle cx="657" cy="296" r="22" fill="#232529"/><circle cx="657" cy="296" r="11" fill="#b3b9bf"/>
                 <path d="M265 261 V330 M230 296 H300 M657 261 V330 M622 296 H692" stroke="#2b2e31" stroke-width="7" opacity=".7"/>
               </svg>
-              <div class="driver-cluster"><div class="cluster-head">M4 <span>READY</span></div><div class="cluster-readouts"><div><small>POWER</small><strong id="cluster-speed">0</strong><small>km/h</small></div><div class="cluster-gear" id="cluster-gear">P</div></div><div class="cluster-bars"><span></span><span></span></div><div class="cluster-foot"><span id="cluster-door">DOORS CLOSED</span><span>SPORT MODE</span></div></div>
+              <div class="driver-cluster"><div class="cluster-head">M4 <span>READY</span><em class="cluster-mode" id="cluster-mode">COMFORT</em></div><div class="cluster-readouts"><div class="speedo"><svg class="speed-arc" viewBox="0 0 200 200" aria-hidden="true"><circle class="arc-track" cx="100" cy="100" r="84"/><circle class="arc-fill" cx="100" cy="100" r="84"/></svg><div class="speedo-value"><strong id="cluster-speed">0</strong><small>km/h</small></div></div><div class="gearbox"><div class="cluster-gear" id="cluster-gear">P</div><div class="prnd" id="prnd-row" aria-hidden="true"><span data-g="P">P</span><span data-g="R">R</span><span data-g="N">N</span><span data-g="D">D</span></div></div></div><div class="cluster-bars"><span></span><span></span></div><div class="cluster-foot"><span id="cluster-door">DOORS CLOSED</span><span id="cluster-foot-mode">COMFORT MODE</span></div></div>
               <div class="steering-column"></div><div class="steering-wheel"><div class="wheel-inner"><div class="wheel-spoke spoke-left"></div><div class="wheel-spoke spoke-right"></div><div class="wheel-spoke spoke-bottom"></div><div class="wheel-hub"><img class="wheel-logo" src="/assets/logos/bmw.svg" alt=""></div><span class="wheel-m wheel-m-left">M</span><span class="wheel-m wheel-m-right">M</span></div></div>
               <div class="hero-caption"><span class="hero-line"></span><span>THE DRIVE, UNDER TEST.</span></div>
             </div>
@@ -96,7 +98,7 @@
             <div class="player-controls"><button aria-label="Faixa anterior" title="Faixa anterior">|◀</button><button class="play-button" id="play-button" data-event="play" aria-label="Reproduzir">▶</button><button aria-label="Próxima faixa" title="Próxima faixa">▶|</button></div>
             <div class="connection-row"><div><span class="connection-icon">ᛒ</span><span>Bluetooth</span><b id="bt-status">ON</b></div><div><span class="connection-icon">⌁</span><span>USB</span><b id="usb-status">OFF</b></div><div><span class="connection-icon">◉</span><span>Phone</span><b id="phone-status">ON</b></div></div>
           </section>
-          <div class="center-console"><div class="climate-row"><span>◉ <b>20°</b> AUTO</span><span>◌ <b>21°</b> AUTO</span></div><div class="console-hardware"><div class="vent vent-left"></div><div class="hazard">△</div><div class="vent vent-right"></div></div><div class="console-lower"><div class="shifter"><span>P</span><div class="shifter-handle"></div><small>M/S</small></div><div class="dial"><span>MENU</span><div class="dial-knob">◎</div><small>MEDIA&nbsp; · &nbsp;NAV</small></div></div></div>
+          <div class="center-console"><div class="climate"><div class="zone"><button class="clim-btn" data-climate="driver:-1" aria-label="Diminuir temperatura (driver)">−</button><div class="zone-temp"><strong id="temp-driver">20.0</strong><sup>°C</sup><small>DRIVER</small></div><button class="clim-btn" data-climate="driver:1" aria-label="Aumentar temperatura (driver)">+</button></div><div class="climate-center"><div class="fan"><button class="clim-btn small" data-climate="fan:-1" aria-label="Diminuir ventilação">−</button><div class="fan-bars" id="fan-bars" aria-label="Ventilação"><i></i><i></i><i></i><i></i><i></i></div><button class="clim-btn small" data-climate="fan:1" aria-label="Aumentar ventilação">+</button></div><div class="climate-toggles"><button class="clim-toggle" data-climate="auto" id="clim-auto">AUTO</button><button class="clim-toggle" data-climate="ac" id="clim-ac">A/C</button><button class="clim-toggle" data-climate="sync" id="clim-sync">SYNC</button></div></div><div class="zone"><button class="clim-btn" data-climate="passenger:-1" aria-label="Diminuir temperatura (passenger)">−</button><div class="zone-temp"><strong id="temp-passenger">21.0</strong><sup>°C</sup><small>PASSENGER</small></div><button class="clim-btn" data-climate="passenger:1" aria-label="Aumentar temperatura (passenger)">+</button></div></div><div class="console-strip"><span>CLIMATE · LOCAL UI</span><span class="hazard" aria-hidden="true">△</span><span>iDRIVE</span></div></div>
         </div>
 
         <div class="bottom-grid">

@@ -104,6 +104,8 @@ function renderState(s) {
   $('#cluster-gear').textContent = s.gear;
   $('#cluster-gear').dataset.currentGear = s.gear;
   if (previous && previous.gear !== s.gear) { replay($('#cluster-gear'), 'pop'); replay($('#gear-value'), 'pop'); }
+  document.querySelectorAll('#prnd-row [data-g]').forEach((g) => g.classList.toggle('active', g.dataset.g === s.gear));
+  renderDriveMode(s);
   $('#gear-text').textContent = {R:'Reverse', N:'Neutral', D:'Drive'}[s.gear] || 'Park';
   document.querySelectorAll('[data-gear]').forEach((b) => b.classList.toggle('active', b.dataset.gear === s.gear));
   $('#ignition-value').textContent = s.ignition ? 'ON' : 'OFF';
@@ -136,6 +138,22 @@ function renderState(s) {
     ['FAULT INJECTION',s.fault||'OFF'],['EVENT COUNT',s.events.length]
   ];
   setHtml($('#signal-list'), signals.map(([label,value]) => `<div class="signal ${signalTone(label,value)}"><small>${esc(label)}</small><strong>${esc(value)}</strong></div>`).join(''));
+}
+
+// Comfort / Sport, mirroring the Unity cluster: Sport engages at 120 km/h and releases
+// below 110 km/h (hysteresis, so the theme does not flicker around the threshold).
+const SPORT_ON = 120, SPORT_OFF = 110;
+let sport = false;
+function renderDriveMode(s) {
+  sport = sport ? s.speed_kmh >= SPORT_OFF : s.speed_kmh >= SPORT_ON;
+  document.body.classList.toggle('mode-sport', sport);
+  const mode = sport ? 'SPORT' : 'COMFORT';
+  $('#drive-mode').textContent = mode;
+  $('#cluster-mode').textContent = mode;
+  $('#cluster-foot-mode').textContent = `${mode} MODE`;
+  const links = [s.bluetooth, s.usb_connected, s.phone_connected].filter(Boolean).length;
+  $('#drive-links').textContent = `${links}/3 ONLINE`;
+  $('#drive-links').dataset.tone = links === 3 ? 'ok' : links ? 'warn' : 'off';
 }
 
 // Colour-codes telemetry values so state reads at a glance: ok / warn / fault / off.
@@ -175,6 +193,9 @@ function renderReport(r) {
   banner.className = `run-banner ${r.status}`;
   const progress = r.status === 'running' ? '<span class="run-progress" aria-hidden="true"></span>' : '';
   if (setHtml(banner, `<span class="run-icon">${icon[r.status]||'◇'}</span><div><strong>${labels[r.status]||esc(r.status)}</strong><small>${esc(descriptions[r.status]||'')}</small></div>${progress}`) && previous && previous !== r.status) replay(banner, 'pop');
+  const testLabel = {idle:'NO RUN YET',running:'RUNNING…',passed:'PASSED',failed:'DEFECT FOUND',error:'ERROR'};
+  $('#drive-test').textContent = testLabel[r.status] || String(r.status).toUpperCase();
+  $('#drive-test').dataset.tone = {passed:'ok',failed:'fault',error:'fault',running:'run'}[r.status] || 'off';
   const steps = r.steps || [];
   const container = $('#test-steps');
   const already = Number(container.dataset.count || 0);
@@ -290,6 +311,41 @@ async function refresh() {
     renderState(s); renderReport(r);
   } catch { setOnline(false); }
 }
+// ---------- climate (local UI only: the simulator has no HVAC signals) ----------
+
+const climate = {driver:20, passenger:21, fan:3, auto:true, ac:true, sync:false};
+function renderClimate() {
+  $('#temp-driver').textContent = climate.driver.toFixed(1);
+  $('#temp-passenger').textContent = climate.passenger.toFixed(1);
+  document.querySelectorAll('#fan-bars i').forEach((bar, i) => bar.classList.toggle('on', i < climate.fan));
+  for (const key of ['auto','ac','sync']) $(`#clim-${key}`).classList.toggle('on', climate[key]);
+}
+document.querySelectorAll('[data-climate]').forEach((button) => button.addEventListener('click', () => {
+  const [key, step] = button.dataset.climate.split(':');
+  if (step === undefined) climate[key] = !climate[key];
+  else if (key === 'fan') { climate.fan = Math.max(1, Math.min(5, climate.fan + Number(step))); climate.auto = false; }
+  else {
+    climate[key] = Math.max(16, Math.min(28, climate[key] + Number(step) * 0.5));
+    if (climate.sync) climate[key === 'driver' ? 'passenger' : 'driver'] = climate[key];
+    replay($(`#temp-${key}`), 'pop');
+  }
+  if (key === 'sync' && climate.sync) climate.passenger = climate.driver;
+  renderClimate();
+}));
+renderClimate();
+
+// ---------- road in the windshield scrolls with the live speed ----------
+
+let roadOffset = 0, roadLast = performance.now();
+function roadFrame(now) {
+  const dt = Math.min(0.1, (now - roadLast) / 1000);
+  roadLast = now;
+  roadOffset = (roadOffset + (state ? state.speed_kmh : 0) * dt * 1.6) % 4000;
+  document.documentElement.style.setProperty('--road', `${roadOffset.toFixed(1)}px`);
+  requestAnimationFrame(roadFrame);
+}
+if (!reducedMotion) requestAnimationFrame(roadFrame);
+
 updateClock(); setInterval(updateClock,15000); refresh(); setInterval(refresh,450);
 refreshAndroid(); setInterval(refreshAndroid,3000);
 setInterval(() => { if (aaosActive && androidOnline) $('#android-screen').src = `/api/android/screen?t=${Date.now()}`; },1500);

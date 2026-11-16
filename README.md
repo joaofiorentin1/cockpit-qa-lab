@@ -26,6 +26,7 @@ A Python state machine drives a visible cockpit, connectivity events, simulated 
 - **5 validation scenarios** — run from the UI, each step reports `expected` vs `actual` state and exports a JSON report.
 - **Reproducible defect injection** — flip one switch to make a test fail on purpose and walk through root cause analysis.
 - **Real Android Automotive** — the official AAOS emulator can be streamed and touched inside the infotainment screen; speed is injected into VHAL.
+- **Curved-display cockpit** — web cluster with speed arc and P R N D selector, a live drive bar (drive mode, connectivity, last validation), a road that scrolls with speed and dual-zone climate controls; the whole cabin switches from Comfort blue to Sport red above 120 km/h, in sync with the 3D cluster.
 - **3D instrument cluster** — Unity WebGL cluster that follows the simulator live (gear, speed, media, connectivity), with a road that scrolls with speed, a speed arc, a P R N D selector, a distant skyline and a BMW-inspired Comfort (blue) / Sport (red, above 120 km/h) theme. [Open it online](https://cockpit-qa-lab-ia85.onrender.com/unity/).
 - **CI** — unit, API, contract and Selenium browser tests on GitHub Actions.
 - **Documented decisions** — 11 [ADRs](docs/adr/README.md) explain the trade-offs behind the design.
@@ -34,7 +35,7 @@ A Python state machine drives a visible cockpit, connectivity events, simulated 
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/images/cockpit-driving.png" alt="Cockpit at 128 km/h in Drive"><br><sub><b>Driving</b> — speed and gear streamed from the simulator to the cluster.</sub></td>
+    <td width="50%"><img src="docs/images/cockpit-driving.png" alt="Cockpit at 128 km/h in Drive, Sport mode"><br><sub><b>Driving</b> — speed and gear streamed from the simulator; Sport mode turns the cabin red above 120 km/h.</sub></td>
     <td width="50%"><img src="docs/images/cluster-3d.png" alt="Unity 3D instrument cluster in Sport mode at 170 km/h"><br><sub><b>Cluster 3D</b> — Unity WebGL cluster; switches from Comfort blue to Sport red above 120 km/h.</sub></td>
   </tr>
   <tr>
