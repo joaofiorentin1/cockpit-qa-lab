@@ -44,6 +44,6 @@ jobs:
             sleep 10
           done
           scenarios=$(curl --fail --silent --max-time 15 "$RENDER_URL/api/scenarios" | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))')
-          [ "$scenarios" = 5 ] || { echo "::error::expected 5 scenarios, got $scenarios"; exit 1; }
+          [ "$scenarios" = 6 ] || { echo "::error::expected 6 scenarios, got $scenarios"; exit 1; }
           curl --fail --silent --max-time 15 "$RENDER_URL/api/state" | python3 -c 'import json,sys; assert json.load(sys.stdin)["gear"]'
           echo "smoke test passed"
