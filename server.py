@@ -31,6 +31,14 @@ class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(ROOT / "web"), **kwargs)
 
+    def end_headers(self):
+        # Static files (incl. the Unity WebGL build) only carry Last-Modified, which lets
+        # browsers cache them heuristically and mix an old framework with a new wasm after a
+        # deploy. "no-cache" keeps caching but forces a cheap revalidation (304) every load.
+        if not any(line.lower().startswith(b"cache-control:") for line in getattr(self, "_headers_buffer", [])):
+            self.send_header("Cache-Control", "no-cache")
+        super().end_headers()
+
     def _json(self, payload, status=200, download=False):
         body = json.dumps(payload, indent=2).encode("utf-8")
         self.send_response(status)
