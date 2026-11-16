@@ -4,6 +4,7 @@
 
 **BMW M4-inspired infotainment test bench — simulated vehicle, live HMI and automated validation with expected-vs-actual evidence.**
 
+[![Live demo](https://img.shields.io/badge/Live_demo-cockpit--qa--lab-42EDBA?logo=render&logoColor=white)](https://cockpit-qa-lab-ia85.onrender.com)
 [![CI](https://github.com/joaofiorentin1/cockpit-qa-lab/actions/workflows/cockpit-qa.yml/badge.svg)](https://github.com/joaofiorentin1/cockpit-qa-lab/actions/workflows/cockpit-qa.yml)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Selenium](https://img.shields.io/badge/Selenium-E2E-43B02A?logo=selenium&logoColor=white)
@@ -47,6 +48,10 @@ A Python state machine drives a visible cockpit, connectivity events, simulated 
 </table>
 
 ## Run the cockpit
+
+**Live demo:** https://cockpit-qa-lab-ia85.onrender.com — hosted on a free instance, so the first request after idle can take ~30 s. The AAOS emulator integration is local-only.
+
+To run locally:
 
 Requires Python 3.10+; the app itself has no third-party dependencies.
 
