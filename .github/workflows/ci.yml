@@ -1,28 +1,54 @@
-name: Cockpit QA Lab
+name: CI
 
 on:
   push:
   pull_request:
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  test:
+  unit-api:
+    name: Unit and API (Python ${{ matrix.python }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - run: python -m pip install -r requirements-dev.txt
+      - name: Tests with coverage
+        run: >
+          pytest -m "not selenium and not appium and not aaos_live"
+          --cov=cockpit --cov=qa --cov=server --cov=adapters
+          --cov-report=term-missing --cov-report=xml
+      - uses: actions/upload-artifact@v4
+        if: matrix.python == '3.12'
+        with:
+          name: coverage-xml
+          path: coverage.xml
+
+  e2e-selenium:
+    name: E2E Selenium
+    runs-on: ubuntu-latest
+    needs: unit-api
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install browser test dependency
-        run: python -m pip install -r requirements-dev.txt
-      - name: Core simulator tests
-        run: |
-          python -m unittest discover -s tests -p 'test_cockpit.py' -v
-          python -m unittest discover -s tests -p 'test_qa_runner.py' -v
-          python -m unittest discover -s tests -p 'test_server_api.py' -v
-          python -m unittest discover -s tests -p 'test_web_contract.py' -v
-          python -m unittest discover -s tests -p 'test_socketcan_bridge.py' -v
-      - name: Selenium cockpit test
-        run: python -m unittest discover -s tests -p 'test_ui_selenium.py' -v
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - run: python -m pip install -r requirements-dev.txt
+      - name: Selenium cockpit tests
+        run: pytest -m selenium
       - name: Upload screenshots
         if: always()
         uses: actions/upload-artifact@v4
