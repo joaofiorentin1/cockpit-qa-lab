@@ -1,0 +1,146 @@
+/* Brand layer: act digital × BMW.
+   Loaded after styles.css / android.css. Palette sources:
+   - act digital: graphite/black surfaces, white logotype, mint accent (#42EDBA), Satoshi
+     (actdigital.com).
+   - BMW: BMW blue (#1C69D4) for interaction; BMW M stripe colours taken from the
+     official M logo (#0066B1 / #003D78 / #E22718). */
+
+@font-face{font-family:'Satoshi';src:url('/assets/fonts/satoshi-400.woff2') format('woff2');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('/assets/fonts/satoshi-500.woff2') format('woff2');font-weight:500 600;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('/assets/fonts/satoshi-700.woff2') format('woff2');font-weight:700 800;font-style:normal;font-display:swap}
+@font-face{font-family:'Satoshi';src:url('/assets/fonts/satoshi-900.woff2') format('woff2');font-weight:900;font-style:normal;font-display:swap}
+
+:root{
+  --act-mint:#42edba;
+  --act-mint-soft:#42edba1f;
+  --bmw-blue:#1c69d4;
+  --bmw-blue-bright:#4b8fe6;
+  --bmw-blue-soft:#1c69d424;
+  --m-light:#0066b1;
+  --m-dark:#003d78;
+  --m-red:#e22718;
+  --surface-0:#0b0c0e;
+  --surface-1:#121316;
+  --surface-2:#17181c;
+  --line:#26282d;
+  --text-1:#f2f3f5;
+  --text-2:#a4a8b0;
+  --text-3:#6c7078;
+  font-family:'Satoshi',system-ui,sans-serif;
+  background:var(--surface-0);
+}
+body{background:var(--surface-0)}
+.main{background:radial-gradient(ellipse 60% 32% at 50% -14%,#1c69d41f 0%,transparent 100%),var(--surface-0)}
+.sidebar{background:#08090b;border-right-color:var(--line)}
+
+/* Numbers that update live should not jitter. */
+#speed-value,#cluster-speed,#clock,#screen-clock,#speed-slider-value,.event-item time,.top-time{font-variant-numeric:tabular-nums}
+
+/* ---------- BMW M stripe ---------- */
+.m-stripe{display:flex;height:3px}
+.m-stripe i{flex:1}
+.m-stripe i:nth-child(1){background:var(--m-light)}
+.m-stripe i:nth-child(2){background:var(--m-dark)}
+.m-stripe i:nth-child(3){background:var(--m-red)}
+
+/* ---------- Sidebar brand ---------- */
+.brand{flex-direction:column;align-items:flex-start;gap:16px;padding:2px 13px 46px}
+.brand-act{height:30px;width:auto;display:block}
+.brand-product strong{display:block;font:700 14px 'Satoshi',sans-serif;letter-spacing:.01em;color:var(--text-1)}
+.brand-product small{display:block;margin-top:5px;font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--act-mint)}
+.brand-compact{display:none}
+.side-label{color:var(--text-3)}
+.nav-item{color:var(--text-2)}
+.nav-item:hover{background:#16171b;color:var(--text-1)}
+.nav-item.active{background:var(--bmw-blue-soft);border-color:#1c69d466;color:var(--text-1);box-shadow:inset 3px 0 0 var(--bmw-blue)}
+.nav-item.active span{color:var(--bmw-blue-bright)}
+.nav-item b{color:var(--bmw-blue-bright)}
+.lab-status{background:var(--surface-1);border-color:var(--line)}
+.lab-status strong{color:var(--text-1)}
+.sidebar-note{color:var(--text-3)}
+.sidebar-note span{display:block;margin-top:9px;font-size:9px;opacity:.75}
+
+/* ---------- Live / status accents use act mint ---------- */
+.pulse,.live-dot,.stream-dot,.status-dot.green,.projection-indicator{background:var(--act-mint);box-shadow:0 0 10px #42edba99}
+.pill{border-color:#42edba40;background:var(--act-mint-soft);color:var(--act-mint)}
+.cluster-head span,.connection-row b{color:var(--act-mint)}
+.eyebrow{color:var(--act-mint)}
+
+/* ---------- Top bar partner lockup ---------- */
+.topbar{border-bottom-color:var(--line)}
+.top-actions{gap:22px}
+.partner-lockup{display:flex;align-items:center;gap:12px;padding-left:22px;border-left:1px solid var(--line);height:34px}
+.lockup-act{height:20px;width:auto}
+.lockup-x{color:var(--text-3);font-size:14px;font-weight:500}
+.lockup-bmw{width:32px;height:32px}
+h1{font-weight:700;letter-spacing:-.02em}
+h1 span{color:var(--text-2);font-weight:500}
+
+/* ---------- Page intro ---------- */
+.intro-row h2{display:flex;align-items:center;gap:0;font-weight:700;letter-spacing:-.03em}
+.intro-row h2 em{color:var(--text-2);font-weight:500;margin-left:.28em}
+.title-m{height:22px;width:auto;margin-left:16px;align-self:center}
+.build-tag{border-color:var(--line);color:var(--text-3)}
+
+/* ---------- Brand marks inside the cabin ---------- */
+.wheel-logo{width:44px;height:44px;display:block;filter:drop-shadow(0 2px 3px #0009)}
+.screen-brand{display:flex;align-items:center;gap:8px}
+.screen-brand img{width:22px;height:22px}
+.screen-brand span{margin-left:0}
+
+/* ---------- Interaction in BMW blue ---------- */
+.control-grid button,.gear-selector button,.scenario{background:var(--surface-2);border-color:var(--line)}
+.control-grid button:hover,.gear-selector button:hover{background:#1c1e23;border-color:#1c69d499}
+.control-icon{background:var(--bmw-blue-soft);color:var(--bmw-blue-bright)}
+.gear-selector button.active{background:var(--bmw-blue);border-color:var(--bmw-blue);color:#fff;box-shadow:0 0 16px #1c69d466}
+.gear-selector button[data-gear="R"].active{background:var(--m-red);border-color:var(--m-red);color:#fff;box-shadow:0 0 16px #e2271866}
+.speed-control input{accent-color:var(--bmw-blue)}
+.speed-control label strong{color:var(--text-1)}
+.section-heading small{color:var(--bmw-blue-bright)}
+.section-heading>span{border-color:var(--line);color:var(--text-3)}
+.scenario.selected{background:var(--bmw-blue-soft);border-color:var(--bmw-blue)}
+.scenario.selected .radio-dot{border-color:var(--bmw-blue-bright)}
+.scenario-icon{border-color:#1c69d466;color:var(--bmw-blue-bright)}
+.run-button{background:var(--bmw-blue);box-shadow:0 8px 22px #1c69d440;letter-spacing:.02em}
+.run-button:hover{filter:none;background:#2474e0}
+.fault-option input:checked~.toggle-track{background:var(--m-red)}
+.results-panel .section-heading a{color:var(--bmw-blue-bright)}
+
+/* ---------- Results: pass = act mint, fail = M red ---------- */
+.run-banner.passed{background:#42edba14;border-color:#42edba55}
+.run-banner.passed .run-icon{background:var(--act-mint);color:#062a1f}
+.run-banner.failed,.run-banner.error{background:#e2271814;border-color:#e2271866}
+.run-banner.failed .run-icon,.run-banner.error .run-icon{background:var(--m-red);color:#fff}
+.step b{color:var(--act-mint)}
+.step b.failed{color:#ff5a4a}
+.control-grid button.active-fault{border-color:var(--m-red);background:#e2271818}
+
+.toast{background:var(--surface-2);border-color:var(--line);color:var(--text-1)}
+
+/* ---------- Compact sidebar ---------- */
+@media(max-width:820px){
+  .brand{align-items:center;padding:0 0 38px}
+  .brand-product,.brand-compact{display:none}
+  .brand-act{height:auto;width:44px}
+  .partner-lockup .lockup-act,.partner-lockup .lockup-x{display:none}
+  .partner-lockup{padding-left:14px}
+}
+@media(max-width:540px){.title-m{height:16px;margin-left:10px}.partner-lockup{display:none}}
+
+/* ---------- Telemetry value tones ---------- */
+.signal{background:var(--surface-2);border-color:var(--line);position:relative;overflow:hidden}
+.signal:before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:transparent}
+.signal.tone-ok strong{color:var(--act-mint)}
+.signal.tone-ok:before{background:var(--act-mint)}
+.signal.tone-warn strong{color:#ffb547}
+.signal.tone-warn:before{background:#ffb547}
+.signal.tone-fault strong{color:#ff5a4a}
+.signal.tone-fault:before{background:var(--m-red)}
+.signal.tone-off strong{color:var(--text-3)}
+.event-item time{color:var(--text-3)}
+.event-item strong{color:var(--bmw-blue-bright)}
+
+/* External link to the Unity WebGL cluster */
+.nav-external{text-decoration:none;margin-top:10px;border:1px dashed #2f3238}
+.nav-external:hover{border-color:#1c69d499}
+.nav-external b{color:var(--act-mint)}

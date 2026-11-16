@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#000000">
+  <title>Instrument Cluster · Cockpit QA Lab</title>
+  <link rel="icon" href="/assets/logos/bmw.svg" type="image/svg+xml">
+  <style>
+    @font-face{font-family:'Satoshi';src:url('/assets/fonts/satoshi-500.woff2') format('woff2');font-weight:500 600;font-display:swap}
+    @font-face{font-family:'Satoshi';src:url('/assets/fonts/satoshi-700.woff2') format('woff2');font-weight:700;font-display:swap}
+    :root{--mint:#42edba;--blue:#1c69d4;--m1:#0066b1;--m2:#003d78;--m3:#e22718;--line:#26282d;--text:#f2f3f5;--muted:#8a8f98}
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;background:#000;color:var(--text);font-family:'Satoshi',system-ui,sans-serif;overflow:hidden}
+    #unity-canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block;background:#000;outline:none}
+
+    /* Floating controls: dim until hovered so they never compete with the cluster. */
+    .hud{position:fixed;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;z-index:5;pointer-events:none}
+    .hud a,.hud button,.hud .live{pointer-events:auto;display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 14px;border-radius:10px;
+      border:1px solid #ffffff1f;background:#0b0c0ecc;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+      color:var(--text);font:600 12px 'Satoshi',sans-serif;letter-spacing:.02em;text-decoration:none;cursor:pointer;
+      opacity:.55;transition:opacity .2s,border-color .2s,transform .15s}
+    .hud a:hover,.hud button:hover,.hud a:focus-visible,.hud button:focus-visible{opacity:1;border-color:#1c69d4aa}
+    .hud a:active,.hud button:active{transform:scale(.97)}
+    .hud .right{display:flex;gap:8px}
+    .hud .live{pointer-events:none;cursor:default}
+    .live i{width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 0 0 #42edba88;animation:ring 2s infinite}
+    body.ready .live{opacity:.8}
+
+    /* Loading screen */
+    #loader{position:fixed;inset:0;z-index:10;display:grid;place-items:center;background:radial-gradient(ellipse 60% 45% at 50% 40%,#1c69d422,transparent),#0b0c0e;transition:opacity .6s}
+    body.ready #loader{opacity:0;pointer-events:none}
+    .card{width:min(420px,86vw);text-align:center}
+    .logos{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:34px}
+    .logos .act{height:30px}.logos .bmw{width:44px;height:44px}.logos span{color:var(--muted);font-size:16px}
+    .card h1{margin:0 0 6px;font:700 20px 'Satoshi',sans-serif;letter-spacing:-.01em}
+    .card p{margin:0 0 26px;color:var(--muted);font-size:13px}
+    .bar{height:4px;border-radius:4px;background:#1b1c20;overflow:hidden;position:relative}
+    .bar span{position:absolute;inset:0;transform-origin:left;transform:scaleX(0);transition:transform .25s;
+      background:linear-gradient(90deg,var(--m1) 0 33.3%,var(--m2) 33.3% 66.6%,var(--m3) 66.6%)}
+    .pct{margin-top:12px;color:var(--muted);font:500 12px 'Satoshi',sans-serif;font-variant-numeric:tabular-nums}
+    .hint{margin-top:22px;color:#5d626b;font-size:11px}
+    #error{display:none;margin-top:22px;padding:12px 14px;border-radius:10px;border:1px solid #e2271866;background:#e2271814;color:#ffb4ab;font-size:12px;text-align:left}
+    body.failed #error{display:block}
+    @keyframes ring{0%{box-shadow:0 0 0 0 #42edba88}70%{box-shadow:0 0 0 7px #42edba00}100%{box-shadow:0 0 0 0 #42edba00}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <canvas id="unity-canvas" tabindex="-1"></canvas>
+
+  <div class="hud">
+    <a href="/" title="Abrir o painel de controle e validação">← Painel de controle</a>
+    <div class="right">
+      <span class="live" aria-hidden="true"><i></i> Unity · live</span>
+      <button id="fullscreen" type="button" title="Tela cheia">⛶ Tela cheia</button>
+    </div>
+  </div>
+
+  <div id="loader" role="status" aria-live="polite">
+    <div class="card">
+      <div class="logos"><img class="act" src="/assets/logos/act-digital.svg" alt="act digital"><span>×</span><img class="bmw" src="/assets/logos/bmw.svg" alt="BMW"></div>
+      <h1>Instrument cluster</h1>
+      <p>Unity HMI · driven live by the Python simulator</p>
+      <div class="bar"><span id="bar"></span></div>
+      <div class="pct" id="pct">0%</div>
+      <div class="hint">Primeiro carregamento pode levar alguns segundos.</div>
+      <div id="error"></div>
+    </div>
+  </div>
+
+  <script src="Build/unity.loader.js"></script>
+  <script>
+    const canvas = document.getElementById('unity-canvas');
+    const bar = document.getElementById('bar');
+    const pct = document.getElementById('pct');
+    const fail = (message) => {
+      document.body.classList.add('failed');
+      document.getElementById('error').textContent = message;
+    };
+
+    if (!window.WebGL2RenderingContext) {
+      fail('Este navegador não suporta WebGL 2. Use Chrome, Edge ou Firefox atualizados.');
+    } else {
+      createUnityInstance(canvas, {
+        dataUrl: 'Build/unity.data.unityweb',
+        frameworkUrl: 'Build/unity.framework.js.unityweb',
+        codeUrl: 'Build/unity.wasm.unityweb',
+        streamingAssetsUrl: 'StreamingAssets',
+        companyName: "DefaultCompany",
+        productName: "My project",
+        productVersion: "1.4.1",
+        // Cap the render scale: the cluster stays sharp without overloading laptops.
+        devicePixelRatio: Math.min(window.devicePixelRatio || 1, 1.5),
+      }, (progress) => {
+        bar.style.transform = `scaleX(${progress})`;
+        pct.textContent = `${Math.round(progress * 100)}%`;
+      }).then((instance) => {
+        document.body.classList.add('ready');
+        document.getElementById('fullscreen').addEventListener('click', () => instance.SetFullscreen(1));
+      }).catch((error) => fail(`Não foi possível iniciar o cluster: ${error}`));
+    }
+  </script>
+</body>
+</html>

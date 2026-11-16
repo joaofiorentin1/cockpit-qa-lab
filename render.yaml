@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: cockpit-qa-lab
+    runtime: python
+    plan: free
+    buildCommand: "true"
+    startCommand: "python3 server.py"
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: PYTHON_VERSION
+        value: 3.12.6
+    healthCheckPath: /health

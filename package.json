@@ -1,0 +1,12 @@
+{
+  "name": "cockpit-qa-lab",
+  "private": true,
+  "version": "1.0.0",
+  "description": "BMW-inspired Android Automotive infotainment QA lab",
+  "scripts": {
+    "appium": "appium --base-path /"
+  },
+  "devDependencies": {
+    "appium": "^3.0.0"
+  }
+}

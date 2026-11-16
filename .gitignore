@@ -1,0 +1,7 @@
+.avd/
+__pycache__/
+tests/__pycache__/
+.venv/
+artifacts/
+node_modules/
+.appium/

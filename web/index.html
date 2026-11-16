@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0c0e">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Cockpit QA Lab · act digital × BMW</title>
+  <link rel="icon" href="/assets/logos/bmw.svg" type="image/svg+xml">
+  <link rel="preload" href="/assets/fonts/satoshi-500.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/android.css">
+  <link rel="stylesheet" href="/brand.css">
+  <link rel="stylesheet" href="/motion.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <img class="brand-act" src="/assets/logos/act-digital.svg" alt="act digital">
+        <span class="brand-product"><strong>Cockpit QA Lab</strong><small>Automotive validation</small></span>
+      </div>
+      <div class="side-label">WORKSPACE</div>
+      <nav class="side-nav" aria-label="Navegação">
+        <button class="nav-item active" data-tab="cockpit"><span>◫</span> Cockpit <b>01</b></button>
+        <button class="nav-item" data-tab="validation"><span>◇</span> Validação</button>
+        <button class="nav-item" data-tab="telemetry"><span>≋</span> Telemetria</button>
+        <a class="nav-item nav-external" href="/unity/" target="_blank" rel="noopener" title="Abre o painel de instrumentos em Unity numa nova aba"><span>◎</span> Cluster 3D <b>↗</b></a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="lab-status"><span class="pulse"></span><div><strong id="lab-status-title">SIMULATOR ONLINE</strong><small id="lab-status-detail">Local environment · 127.0.0.1</small></div></div>
+        <div class="sidebar-note">Bancada demonstrativa independente. Sinais de veículo e conectividade são simulados.<span>BMW, BMW M e act digital são marcas de seus respectivos titulares.</span></div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="m-stripe" aria-hidden="true"><i></i><i></i><i></i></div>
+      <header class="topbar">
+        <div><div class="eyebrow">AUTOMOTIVE SYSTEMS / TEST BENCH</div><h1 id="page-title">Cockpit <span>Overview</span></h1></div>
+        <div class="top-actions">
+          <span class="pill"><span class="live-dot"></span> LIVE SIMULATION</span>
+          <span class="top-time" id="clock">--:--</span>
+          <span class="partner-lockup"><img src="/assets/logos/act-digital.svg" alt="act digital" class="lockup-act"><span class="lockup-x">×</span><img src="/assets/logos/bmw.svg" alt="BMW" class="lockup-bmw"></span>
+        </div>
+      </header>
+
+      <section class="page active" id="cockpit-page">
+        <div class="intro-row"><div><h2>BMW M4 <em>Simulation</em><img class="title-m" src="/assets/logos/bmw-m.svg" alt="BMW M"></h2><p>Digital cockpit · infotainment validation environment</p></div><span class="build-tag">BUILD 01.0 · PYTHON ENGINE</span></div>
+        <div class="dashboard">
+          <div class="windshield"><div class="windshield-sky"></div><div class="road road-left"></div><div class="road road-right"></div><div class="windshield-label">BMW M4 · DIGITAL TEST COCKPIT <span>SIMULATED ENVIRONMENT</span></div></div>
+          <section class="vehicle-panel">
+            <div class="panel-top"><span>VEHICLE STATUS</span><span class="signal-id">CAN SIM / 0x001</span></div>
+            <div class="vehicle-hero">
+              <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+              <svg class="car-art" viewBox="0 0 900 380" role="img" aria-label="Ilustração de um BMW M4 simulado">
+                <defs>
+                  <linearGradient id="body" x1="0" y1="0" x2="0.5" y2="1"><stop offset="0" stop-color="#7d8189"/><stop offset=".24" stop-color="#dadde2"/><stop offset=".52" stop-color="#70747c"/><stop offset=".83" stop-color="#37393d"/><stop offset="1" stop-color="#17181b"/></linearGradient>
+                  <linearGradient id="glass" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#23272a"/><stop offset=".55" stop-color="#232529"/><stop offset="1" stop-color="#09090b"/></linearGradient>
+                  <linearGradient id="light" x1="0" x2="1"><stop stop-color="#95c0f5"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+                  <filter id="glow"><feGaussianBlur stdDeviation="9"/></filter>
+                </defs>
+                <ellipse cx="454" cy="327" rx="352" ry="28" fill="#070709" opacity=".7"/>
+                <path d="M118 258 Q125 232 163 222 L239 203 Q291 146 344 129 Q420 110 533 126 Q580 138 638 195 L740 213 Q789 221 799 250 L787 293 L744 309 L167 309 L119 284 Z" fill="url(#body)" stroke="#b2b7be" stroke-width="2"/>
+                <path d="M251 199 Q300 145 350 133 Q418 119 525 131 Q564 141 618 192 L585 200 L263 204 Z" fill="url(#glass)" stroke="#a5acb7" stroke-width="2"/>
+                <path d="M391 130 L400 200 M587 196 L620 192" stroke="#c0c5cc" stroke-width="5" opacity=".7"/>
+                <path d="M151 247 Q254 232 382 228 L676 222 Q754 228 792 248" fill="none" stroke="#eff2f5" opacity=".35" stroke-width="3"/>
+                <path d="M150 283 Q307 302 569 294 L786 281" fill="none" stroke="#191b1e" stroke-width="13" opacity=".75"/>
+                <path d="M123 256 L175 249 L177 266 L120 272 Z M748 241 L797 254 L794 270 L741 260 Z" fill="url(#light)" filter="url(#glow)" opacity=".9"/>
+                <path d="M123 256 L175 249 L177 259 L120 266 Z M748 241 L797 254 L794 262 L741 253 Z" fill="#dae9ed"/>
+                <path d="M182 257 L219 248 L224 255 L190 263 Z" fill="#1e2024"/><path d="M694 251 L733 250 L733 261 L694 260 Z" fill="#1e2024"/>
+                <path d="M229 205 Q217 208 213 219 L232 225 L259 211 Z M619 197 L645 203 L662 219 L641 220 Z" fill="#2e3033" stroke="#9fa3aa"/>
+                <path d="M521 132 Q562 143 618 192" fill="none" stroke="#f9fbfc" opacity=".5" stroke-width="4"/>
+                <path d="M242 295 Q261 301 290 302 M628 296 Q652 298 675 294" stroke="#070809" stroke-width="8"/>
+                <circle cx="265" cy="296" r="50" fill="#0b0b0c" stroke="#3a3b3e" stroke-width="7"/><circle cx="265" cy="296" r="35" fill="#8c8f93" stroke="#18191b" stroke-width="6"/><circle cx="265" cy="296" r="22" fill="#232529"/><circle cx="265" cy="296" r="11" fill="#b3b9bf"/>
+                <circle cx="657" cy="296" r="50" fill="#0b0b0c" stroke="#3a3b3e" stroke-width="7"/><circle cx="657" cy="296" r="35" fill="#8c8f93" stroke="#18191b" stroke-width="6"/><circle cx="657" cy="296" r="22" fill="#232529"/><circle cx="657" cy="296" r="11" fill="#b3b9bf"/>
+                <path d="M265 261 V330 M230 296 H300 M657 261 V330 M622 296 H692" stroke="#2b2e31" stroke-width="7" opacity=".7"/>
+              </svg>
+              <div class="driver-cluster"><div class="cluster-head">M4 <span>READY</span></div><div class="cluster-readouts"><div><small>POWER</small><strong id="cluster-speed">0</strong><small>km/h</small></div><div class="cluster-gear" id="cluster-gear">P</div></div><div class="cluster-bars"><span></span><span></span></div><div class="cluster-foot"><span id="cluster-door">DOORS CLOSED</span><span>SPORT MODE</span></div></div>
+              <div class="steering-column"></div><div class="steering-wheel"><div class="wheel-inner"><div class="wheel-spoke spoke-left"></div><div class="wheel-spoke spoke-right"></div><div class="wheel-spoke spoke-bottom"></div><div class="wheel-hub"><img class="wheel-logo" src="/assets/logos/bmw.svg" alt=""></div><span class="wheel-m wheel-m-left">M</span><span class="wheel-m wheel-m-right">M</span></div></div>
+              <div class="hero-caption"><span class="hero-line"></span><span>THE DRIVE, UNDER TEST.</span></div>
+            </div>
+            <div class="vehicle-metrics">
+              <div class="metric"><small>VEHICLE SPEED</small><div><strong id="speed-value">0</strong><span>km/h</span></div></div>
+              <div class="metric"><small>GEAR</small><div><strong id="gear-value">P</strong><span id="gear-text">Park</span></div></div>
+              <div class="metric"><small>IGNITION</small><div><span class="status-dot green" id="ignition-dot"></span><strong class="metric-word" id="ignition-value">ON</strong></div></div>
+              <div class="metric"><small>DRIVER DOOR</small><div><span class="status-dot green" id="door-dot"></span><strong class="metric-word" id="door-value">CLOSED</strong></div></div>
+            </div>
+          </section>
+
+          <section class="infotainment-panel">
+            <div class="panel-top"><span>INFOTAINMENT</span><button class="android-mode" id="android-mode" disabled>AAOS OFFLINE</button></div>
+            <div class="android-live" id="android-live"><img id="android-screen" alt="Tela real do emulador Android Automotive"><span class="android-caption">ANDROID AUTOMOTIVE OS · ADB LIVE</span></div>
+            <div class="screen-top"><div class="screen-brand"><img src="/assets/logos/bmw.svg" alt="BMW"><span>ConnectedDrive</span></div><div class="screen-clock" id="screen-clock">--:--</div></div>
+            <div class="projection-card" id="projection-card"><div class="projection-icon">A<span>↗</span></div><div><small>PHONE PROJECTION</small><strong id="projection-value">Android Auto</strong><span id="projection-subtitle">Connected and ready</span></div><span class="projection-indicator"></span></div>
+            <div class="music-card"><div class="album-art"><span class="album-glow"></span><span>QA<br><i>RADIO</i></span></div><div class="music-main"><small>NOW PLAYING</small><strong>Midnight Drive</strong><span>Cockpit QA Radio</span><div class="progress-track"><span id="progress-bar"></span></div><div class="music-times"><span>01:24</span><span>03:48</span></div></div></div>
+            <div class="player-controls"><button aria-label="Faixa anterior" title="Faixa anterior">|◀</button><button class="play-button" id="play-button" data-event="play" aria-label="Reproduzir">▶</button><button aria-label="Próxima faixa" title="Próxima faixa">▶|</button></div>
+            <div class="connection-row"><div><span class="connection-icon">ᛒ</span><span>Bluetooth</span><b id="bt-status">ON</b></div><div><span class="connection-icon">⌁</span><span>USB</span><b id="usb-status">OFF</b></div><div><span class="connection-icon">◉</span><span>Phone</span><b id="phone-status">ON</b></div></div>
+          </section>
+          <div class="center-console"><div class="climate-row"><span>◉ <b>20°</b> AUTO</span><span>◌ <b>21°</b> AUTO</span></div><div class="console-hardware"><div class="vent vent-left"></div><div class="hazard">△</div><div class="vent vent-right"></div></div><div class="console-lower"><div class="shifter"><span>P</span><div class="shifter-handle"></div><small>M/S</small></div><div class="dial"><span>MENU</span><div class="dial-knob">◎</div><small>MEDIA&nbsp; · &nbsp;NAV</small></div></div></div>
+        </div>
+
+        <div class="bottom-grid">
+          <section class="control-panel"><div class="section-heading"><div><small>CONTROL SURFACE</small><h3>Inject vehicle & connectivity events</h3></div><span>MANUAL MODE</span></div><div class="control-grid"><button data-event="phone_disconnect" id="phone-control"><span class="control-icon">◉</span><span><strong>Disconnect phone</strong><small>Projection signal</small></span><span class="arrow">↗</span></button><button data-event="bluetooth_toggle"><span class="control-icon">ᛒ</span><span><strong>Bluetooth</strong><small>Toggle radio</small></span><span class="arrow">↗</span></button><button data-event="usb_toggle"><span class="control-icon">⌁</span><span><strong>USB port</strong><small>Toggle cable</small></span><span class="arrow">↗</span></button><button data-event="reverse_toggle"><span class="control-icon">R</span><span><strong>Reverse gear</strong><small>CAN simulated</small></span><span class="arrow">↗</span></button><button data-event="door_toggle"><span class="control-icon">▣</span><span><strong>Driver door</strong><small>CAN simulated</small></span><span class="arrow">↗</span></button><button data-event="fault_toggle" id="fault-control"><span class="control-icon">⚡</span><span><strong>Inject fault</strong><small>Playback recovery</small></span><span class="arrow">↗</span></button></div><div class="gear-selector" role="group" aria-label="Gear selector"><span>Gear selector</span><button data-gear="P">P</button><button data-gear="R">R</button><button data-gear="N">N</button><button data-gear="D">D</button></div><div class="speed-control"><label for="speed-slider">Vehicle speed · syncs to AAOS VHAL when online <strong id="speed-slider-value">0 km/h</strong></label><input id="speed-slider" type="range" min="0" max="180" value="0"></div></section>
+          <section class="events-panel"><div class="section-heading"><div><small>EVENT STREAM</small><h3>Live system log</h3></div><span class="stream-dot"></span></div><div class="event-list" id="event-list"></div></section>
+        </div>
+      </section>
+
+      <section class="page" id="validation-page"><div class="intro-row"><div><h2>Validation <em>Console</em></h2><p>Execute Python scenarios against the live cockpit</p></div><span class="build-tag">PYTHON · ASSERTIONS · EVIDENCE</span></div><div class="validation-grid"><section class="test-panel"><div class="section-heading"><div><small>TEST SUITE</small><h3>Choose a scenario</h3></div></div><div class="scenario-list"><label class="scenario selected"><input type="radio" name="scenario" value="reconnect" checked><span class="scenario-icon">01</span><span><strong>Phone reconnection & media recovery</strong><small>Disconnect during playback, reconnect, verify recovery</small></span><span class="radio-dot"></span></label><label class="scenario"><input type="radio" name="scenario" value="usb_fallback"><span class="scenario-icon">02</span><span><strong>USB connectivity fallback</strong><small>Disable Bluetooth, retain projection on USB, unplug</small></span><span class="radio-dot"></span></label><label class="scenario"><input type="radio" name="scenario" value="reverse_camera"><span class="scenario-icon">03</span><span><strong>Reverse gear signal</strong><small>Verify simulated CAN state transitions</small></span><span class="radio-dot"></span></label><label class="scenario"><input type="radio" name="scenario" value="door_safety"><span class="scenario-icon">04</span><span><strong>Door / reverse interlock</strong><small>Reverse is refused while the driver door is open</small></span><span class="radio-dot"></span></label><label class="scenario"><input type="radio" name="scenario" value="gear_interlock"><span class="scenario-icon">05</span><span><strong>Gear selector interlock</strong><small>P and R refused while moving, N allowed when coasting</small></span><span class="radio-dot"></span></label></div><label class="fault-option"><input type="checkbox" id="inject-fault"><span><strong>Inject a reproducible defect</strong><small>Playback will fail to recover after reconnection</small></span><span class="toggle-track"></span></label><button class="run-button" id="run-button"><span>▶</span> Run validation</button><p class="hint">The test runs in Python. Watch the cockpit tab as vehicle state changes.</p></section><section class="results-panel"><div class="section-heading"><div><small>TEST EXECUTION</small><h3>Evidence & results</h3></div><a href="/api/report/download" id="download-report" download>↓ JSON report</a></div><div class="run-banner" id="run-banner"><span class="run-icon">◇</span><div><strong>No run yet</strong><small>Select a scenario and run the validation.</small></div></div><div class="steps" id="test-steps"></div><div class="results-footer"><span id="result-summary">Waiting for execution</span><span id="result-time">—</span></div></section></div></section>
+
+      <section class="page" id="telemetry-page"><div class="intro-row"><div><h2>Signal <em>Monitor</em></h2><p>Current signals and event history for root cause analysis</p></div><span class="build-tag">SIMULATED VEHICLE BUS</span></div><div class="telemetry-grid"><section class="telemetry-card"><div class="section-heading"><div><small>LIVE SIGNALS</small><h3>Vehicle & head unit</h3></div></div><div id="signal-list" class="signal-list"></div></section><section class="telemetry-card"><div class="section-heading"><div><small>RAW EVIDENCE</small><h3>Event timeline</h3></div></div><div id="telemetry-events" class="telemetry-events"></div></section></div></section>
+      <div class="toast" id="toast" role="status"></div>
+    </main>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>
