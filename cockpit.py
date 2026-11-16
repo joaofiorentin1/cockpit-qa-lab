@@ -28,6 +28,9 @@ def _timestamp() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+REVERSE_MAX_KMH = 15
+
+
 class Cockpit:
     def __init__(self) -> None:
         self._lock = RLock()
@@ -67,7 +70,10 @@ class Cockpit:
 
     def snapshot(self) -> dict:
         with self._lock:
-            return deepcopy(self._state)
+            snap = deepcopy(self._state)
+            # Derived signal: the head unit shows the rear-view camera whenever R is engaged.
+            snap["rear_camera"] = snap["gear"] == "R"
+            return snap
 
     def dispatch(self, event: str, value=None) -> dict:
         with self._lock:
@@ -132,6 +138,8 @@ class Cockpit:
                 if not s["ignition"]:
                     raise ValueError("Ignition must be on")
                 target = "P" if s["gear"] == "R" else "R"
+                if s["speed_kmh"] > 0:
+                    raise ValueError(f"Stop the vehicle before selecting {target}")
                 if target == "R" and s["door_open"]:
                     raise ValueError("Cannot engage reverse while a door is open")
                 s["gear"] = target
@@ -145,6 +153,8 @@ class Cockpit:
                     raise ValueError(f"Stop the vehicle before selecting {value}")
                 if value == "R" and s["door_open"]:
                     raise ValueError("Cannot engage reverse while a door is open")
+                if value == "D" and s["gear"] == "R" and s["speed_kmh"] > 0:
+                    raise ValueError("Stop the vehicle before changing direction")
                 s["gear"] = value
                 self._log("CAN", f"Gear changed to {value}")
             elif event == "speed_set":
@@ -153,9 +163,12 @@ class Cockpit:
                     raise ValueError("Speed must be between 0 and 240 km/h")
                 if not s["ignition"] and speed:
                     raise ValueError("Ignition must be on")
+                if s["gear"] == "R" and speed > REVERSE_MAX_KMH:
+                    raise ValueError(f"Reverse speed is limited to {REVERSE_MAX_KMH} km/h")
                 s["speed_kmh"] = speed
-                # Neutral is kept (coasting / stopped in N); otherwise speed drives D/P.
-                if s["gear"] != "N":
+                # Neutral and Reverse are kept (coasting, or manoeuvring backwards);
+                # otherwise speed drives D/P.
+                if s["gear"] not in {"N", "R"}:
                     s["gear"] = "D" if speed else "P"
                 self._log("CAN SIM", f"Vehicle speed signal: {speed} km/h")
             elif event == "fault_toggle":

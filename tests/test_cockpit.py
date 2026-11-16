@@ -93,6 +93,7 @@ class CockpitTests(unittest.TestCase):
     def test_vehicle_signals_and_invalid_speed(self):
         self.assertEqual(self.cockpit.dispatch("reverse_toggle")["gear"], "R")
         self.assertEqual(self.cockpit.dispatch("door_toggle")["door_open"], True)
+        self.assertEqual(self.cockpit.dispatch("reverse_toggle")["gear"], "P")  # R keeps speed capped, so leave it first
         self.assertEqual(self.cockpit.dispatch("speed_set", 80)["speed_kmh"], 80)
         with self.assertRaises(ValueError):
             self.cockpit.dispatch("speed_set", 250)
@@ -133,6 +134,28 @@ class CockpitTests(unittest.TestCase):
         self.assertEqual(self.cockpit.dispatch("gear_set", "P")["gear"], "P")
         with self.assertRaises(ValueError):
             self.cockpit.dispatch("gear_set", "X")
+
+    def test_reverse_drives_backwards_up_to_the_limit(self):
+        self.cockpit.dispatch("reverse_toggle")
+        state = self.cockpit.dispatch("speed_set", 15)
+        self.assertEqual((state["gear"], state["speed_kmh"], state["rear_camera"]), ("R", 15, True))
+        with self.assertRaisesRegex(ValueError, "limited to 15"):
+            self.cockpit.dispatch("speed_set", 16)
+        self.assertEqual(self.cockpit.snapshot()["speed_kmh"], 15)
+        self.assertEqual(self.cockpit.dispatch("speed_set", 0)["gear"], "R")  # stopping keeps R
+
+    def test_no_direction_or_park_change_while_reversing(self):
+        self.cockpit.dispatch("reverse_toggle")
+        self.cockpit.dispatch("speed_set", 8)
+        for event, value in (("gear_set", "D"), ("gear_set", "P"), ("reverse_toggle", None)):
+            with self.subTest(event=event, value=value), self.assertRaisesRegex(ValueError, "Stop the vehicle"):
+                self.cockpit.dispatch(event, value)
+        self.assertEqual(self.cockpit.dispatch("gear_set", "N")["gear"], "N")  # coasting is allowed
+
+    def test_rear_camera_follows_reverse_gear(self):
+        self.assertFalse(self.cockpit.snapshot()["rear_camera"])
+        self.assertTrue(self.cockpit.dispatch("gear_set", "R")["rear_camera"])
+        self.assertFalse(self.cockpit.dispatch("gear_set", "P")["rear_camera"])
 
     def test_park_and_reverse_refused_while_moving(self):
         self.cockpit.dispatch("speed_set", 50)

@@ -70,7 +70,7 @@ class ServerApiTests(unittest.TestCase):
     def test_state_shape(self):
         status, state = self.get_json("/api/state")
         self.assertEqual(status, 200)
-        for key in ("speed_kmh", "gear", "door_open", "bluetooth", "phone_connected", "projection", "events"):
+        for key in ("speed_kmh", "gear", "door_open", "bluetooth", "phone_connected", "projection", "rear_camera", "events"):
             self.assertIn(key, state)
 
     def test_state_is_never_cached(self):
@@ -111,6 +111,12 @@ class ServerApiTests(unittest.TestCase):
         status, body = self.post("/api/events", {"event": "gear_set", "value": "P"})
         self.assertEqual(status, 400)
         self.assertIn("Stop the vehicle", body["error"])
+
+    def test_reverse_speed_cap_returns_400(self):
+        self.post("/api/events", {"event": "gear_set", "value": "R"})
+        status, body = self.post("/api/events", {"event": "speed_set", "value": 25})
+        self.assertEqual(status, 400)
+        self.assertIn("limited to 15", body["error"])
 
     def test_unknown_event_returns_400(self):
         status, body = self.post("/api/events", {"event": "launch_rockets"})

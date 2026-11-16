@@ -64,7 +64,9 @@ python3 server.py
 
 Open **http://127.0.0.1:8765**. Stop with `Ctrl+C`.
 
-In **Cockpit**, use the event controls to change phone, Bluetooth, USB, reverse gear, door and speed. In **Validação**, select a scenario and click **Run validation**. The browser switches to the cockpit while the Python runner drives it, then returns to the report. Enable **Inject a reproducible defect** to demonstrate a failing reconnection test. **Telemetria** shows current signals and the event timeline. The report can be downloaded as JSON.
+In **Cockpit**, use the event controls to change phone, Bluetooth, USB, reverse gear, door and speed. In **Validação**, select a scenario and click **Run validation**. The browser switches to the cockpit while the Python runner drives it, then returns to the report. Enable **Inject a reproducible defect** to demonstrate a failing reconnection test. **Telemetria** shows current signals and the event timeline. The report can be downloaded as JSON. **Como funciona** is the in-app documentation: architecture, safety rules, scenarios, test suite and API.
+
+Engage **R** to drive backwards: the infotainment switches to a rear-view camera with parking guidelines, the road runs the other way, and reverse is capped at 15 km/h by the simulator.
 
 ### Show the real Android Automotive emulator in the dashboard
 
@@ -85,7 +87,8 @@ The live Android screen is **a separate integration track**: the Python media re
 2. Run **Phone reconnection & media recovery** without fault injection. It should pass 3/3 assertions.
 3. Run it again with fault injection. It should fail 2/3 assertions, showing expected versus actual `media_playing` state.
 4. Open **Telemetria** to follow the event trail used for root cause analysis.
-5. If AAOS is running, switch the multimedia display to **AAOS LIVE** to see the actual emulated Android UI.
+5. Run **Reverse gear & rear camera**: the camera turns on in R, 8 km/h is accepted, 25 km/h is refused, and the camera turns off in P.
+6. If AAOS is running, switch the multimedia display to **AAOS LIVE** to see the actual emulated Android UI.
 
 ## Architecture
 

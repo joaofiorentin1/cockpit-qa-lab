@@ -159,6 +159,19 @@ class CockpitBrowserTests(unittest.TestCase):
                 self.assertEqual(self.css("#cluster-gear").get_attribute("data-current-gear"), gear)
                 self.assertIn("active", self.css(f'[data-gear="{gear}"]').get_attribute("class"))
 
+    def test_reverse_shows_the_rear_camera(self):
+        camera = self.css("#rear-camera")
+        self.assertFalse(camera.is_displayed())
+        self.api("/api/events", {"event": "gear_set", "value": "R"})
+        self.wait.until(lambda b: camera.is_displayed())
+        self.api("/api/events", {"event": "speed_set", "value": 8})
+        self.wait.until(EC.text_to_be_present_in_element((By.ID, "cam-speed"), "R · 8 km/h"))
+        self.wait.until(EC.text_to_be_present_in_element((By.ID, "drive-mode"), "REVERSE"))
+        self.browser.save_screenshot(str(ARTIFACTS / "rear-camera.png"))
+        self.api("/api/events", {"event": "speed_set", "value": 0})
+        self.api("/api/events", {"event": "gear_set", "value": "P"})
+        self.wait.until(lambda b: not camera.is_displayed())
+
     def test_refused_gear_change_shows_an_error_toast(self):
         self.api("/api/events", {"event": "speed_set", "value": 60})
         self.click('[data-gear="P"]')

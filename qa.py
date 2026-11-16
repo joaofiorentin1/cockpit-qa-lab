@@ -14,7 +14,7 @@ from cockpit import Cockpit
 SCENARIOS = {
     "reconnect": "Phone reconnection & media recovery",
     "usb_fallback": "USB connectivity fallback",
-    "reverse_camera": "Reverse gear signal",
+    "reverse_camera": "Reverse gear & rear camera",
     "door_safety": "Door / reverse interlock",
     "gear_interlock": "Gear selector interlock",
 }
@@ -111,8 +111,11 @@ class QARunner:
                 ]
             elif scenario == "reverse_camera":
                 checks = [
-                    self._step("Select reverse gear", "reverse_toggle", {"gear": "R"}),
-                    self._step("Return to park", "reverse_toggle", {"gear": "P"}),
+                    self._step("Select reverse; rear camera turns on", "reverse_toggle", {"gear": "R", "rear_camera": True}),
+                    self._step("Reverse at 8 km/h", "speed_set", {"gear": "R", "speed_kmh": 8, "rear_camera": True}, 8),
+                    self._step_rejected("Reverse above 15 km/h is refused", "speed_set", 25),
+                    self._step("Stop", "speed_set", {"gear": "R", "speed_kmh": 0}, 0),
+                    self._step("Return to park; camera turns off", "reverse_toggle", {"gear": "P", "rear_camera": False}),
                 ]
             elif scenario == "gear_interlock":
                 checks = [

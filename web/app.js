@@ -1,7 +1,7 @@
 const $ = (selector) => document.querySelector(selector);
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const TABS = ['cockpit', 'validation', 'telemetry'];
+const TABS = ['cockpit', 'validation', 'telemetry', 'docs'];
 const SPEED_MAX = 180;
 
 let state = null;
@@ -76,7 +76,7 @@ function tab(name) {
     if (active && changed) replay(page, 'page-enter');
   });
   document.querySelectorAll('.nav-item[data-tab]').forEach((item) => item.classList.toggle('active', item.dataset.tab === name));
-  $('#page-title').innerHTML = name === 'cockpit' ? 'Cockpit <span>Overview</span>' : name === 'validation' ? 'Test <span>Validation</span>' : 'System <span>Telemetry</span>';
+  $('#page-title').innerHTML = name === 'cockpit' ? 'Cockpit <span>Overview</span>' : name === 'validation' ? 'Test <span>Validation</span>' : name === 'docs' ? 'Lab <span>Documentation</span>' : 'System <span>Telemetry</span>';
   history.replaceState(null, '', `#${name}`);
 }
 if (TABS.includes(location.hash.slice(1))) tab(location.hash.slice(1));
@@ -106,6 +106,8 @@ function renderState(s) {
   if (previous && previous.gear !== s.gear) { replay($('#cluster-gear'), 'pop'); replay($('#gear-value'), 'pop'); }
   document.querySelectorAll('#prnd-row [data-g]').forEach((g) => g.classList.toggle('active', g.dataset.g === s.gear));
   renderDriveMode(s);
+  $('.infotainment-panel').classList.toggle('reverse-active', Boolean(s.rear_camera));
+  $('#cam-speed').textContent = `R · ${s.speed_kmh} km/h`;
   $('#gear-text').textContent = {R:'Reverse', N:'Neutral', D:'Drive'}[s.gear] || 'Park';
   document.querySelectorAll('[data-gear]').forEach((b) => b.classList.toggle('active', b.dataset.gear === s.gear));
   $('#ignition-value').textContent = s.ignition ? 'ON' : 'OFF';
@@ -147,10 +149,10 @@ let sport = false;
 function renderDriveMode(s) {
   sport = sport ? s.speed_kmh >= SPORT_OFF : s.speed_kmh >= SPORT_ON;
   document.body.classList.toggle('mode-sport', sport);
-  const mode = sport ? 'SPORT' : 'COMFORT';
+  const mode = s.gear === 'R' ? 'REVERSE' : sport ? 'SPORT' : 'COMFORT';
   $('#drive-mode').textContent = mode;
   $('#cluster-mode').textContent = mode;
-  $('#cluster-foot-mode').textContent = `${mode} MODE`;
+  $('#cluster-foot-mode').textContent = s.gear === 'R' ? 'REAR CAMERA ON' : `${mode} MODE`;
   const links = [s.bluetooth, s.usb_connected, s.phone_connected].filter(Boolean).length;
   $('#drive-links').textContent = `${links}/3 ONLINE`;
   $('#drive-links').dataset.tone = links === 3 ? 'ok' : links ? 'warn' : 'off';
@@ -246,6 +248,11 @@ document.querySelectorAll('.scenario').forEach((item) => item.addEventListener('
   document.querySelectorAll('.scenario').forEach((other) => other.classList.remove('selected'));
   item.classList.add('selected');
 }));
+// Documentation table of contents: scroll within the page and keep #docs in the URL.
+document.querySelectorAll('.docs-toc a').forEach((link) => link.addEventListener('click', (e) => {
+  e.preventDefault();
+  document.querySelector(link.getAttribute('href'))?.scrollIntoView({behavior: reducedMotion ? 'auto' : 'smooth', block: 'start'});
+}));
 let speedTimer;
 $('#speed-slider').addEventListener('input', (e) => {
   $('#speed-slider-value').textContent = `${e.target.value} km/h`;
@@ -340,7 +347,9 @@ let roadOffset = 0, roadLast = performance.now();
 function roadFrame(now) {
   const dt = Math.min(0.1, (now - roadLast) / 1000);
   roadLast = now;
-  roadOffset = (roadOffset + (state ? state.speed_kmh : 0) * dt * 1.6) % 4000;
+  // Reverse moves the road the other way.
+  const velocity = state ? state.speed_kmh * (state.gear === 'R' ? -1 : 1) : 0;
+  roadOffset = ((roadOffset + velocity * dt * 1.6) % 4000 + 4000) % 4000;
   document.documentElement.style.setProperty('--road', `${roadOffset.toFixed(1)}px`);
   requestAnimationFrame(roadFrame);
 }

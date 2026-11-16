@@ -14,7 +14,9 @@ Interlocks are enforced inside `Cockpit.dispatch()` by raising `ValueError` with
 | Request | Refused when | Message |
 |---|---|---|
 | `gear_set R` / `reverse_toggle` | driver door open | Cannot engage reverse while a door is open |
-| `gear_set P` or `R` | `speed_kmh > 0` | Stop the vehicle before selecting P/R |
+| `gear_set P` or `R`, `reverse_toggle` | `speed_kmh > 0` | Stop the vehicle before selecting P/R |
+| `gear_set D` | reversing (`R`, `speed_kmh > 0`) | Stop the vehicle before changing direction |
+| `speed_set` > 15 | gear `R` | Reverse speed is limited to 15 km/h |
 | `gear_set` ≠ P, `speed_set` > 0 | ignition off | Ignition must be on |
 | `play` | phone not connected | Cannot play projected media without a connected phone |
 | `phone_connect` | Bluetooth and USB both off | Enable Bluetooth or connect USB before pairing |
@@ -24,7 +26,7 @@ The HTTP layer maps `ValueError` to **400** with `{"error": message}`; the HMI s
 ## Consequences
 
 **Positive**
-- Negative testing is first-class: scenarios `door_safety` and `gear_interlock` assert refusals.
+- Negative testing is first-class: scenarios `door_safety`, `gear_interlock` and `reverse_camera` assert refusals.
 - A refused command leaves state untouched, so there is nothing to roll back.
 - The same rule protects every client (HMI, runner, CAN adapter).
 

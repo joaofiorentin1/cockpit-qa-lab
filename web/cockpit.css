@@ -152,3 +152,28 @@ body.mode-sport{--accent:#ff5a3c;--accent-deep:#e22718}
 /* A zero-length round-capped stroke still draws a dot: hide the fill at 0 km/h. */
 .arc-fill{opacity:clamp(0,calc(var(--speed) * 60),1)}
 .music-card.playing .progress-track span{background:linear-gradient(90deg,var(--accent-deep),var(--accent),var(--accent-deep)) 0 0/200% 100%}
+
+/* ---------- Rear-view camera (infotainment, whenever R is engaged) ---------- */
+.rear-camera{position:absolute;z-index:6;left:0;right:0;top:29px;bottom:0;overflow:hidden;border-radius:0 0 14px 14px;
+  background:#05070a;opacity:0;visibility:hidden;transform:scale(1.02);transition:opacity .35s var(--ease-out),transform .45s var(--ease-out),visibility 0s .35s}
+.infotainment-panel.reverse-active .rear-camera{opacity:1;visibility:visible;transform:none;transition:opacity .35s var(--ease-out),transform .45s var(--ease-out)}
+.cam-scene{position:absolute;inset:0;background:linear-gradient(180deg,#1b2029 0%,#10141b 34%,#0b0d11 35%,#07080b 100%)}
+.cam-scene:after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 50% 60%,transparent 40%,#000000c0 100%)}
+/* Parking-lot floor seen by a wide rear camera; scrolls toward the camera while reversing. */
+.cam-ground{position:absolute;left:50%;top:35%;width:900px;height:420px;transform:translateX(-50%) perspective(260px) rotateX(58deg);transform-origin:50% 0;
+  background:
+    repeating-linear-gradient(90deg,transparent 0 118px,#d9dde399 118px 122px) 0 0/100% 100%,
+    repeating-linear-gradient(180deg,transparent 0 76px,#d9dde333 76px 80px) 0 calc(-1 * var(--road,0px))/100% 80px,
+    linear-gradient(#2a2f37,#1a1e25)}
+.cam-guides{position:absolute;left:0;right:0;bottom:0;width:100%;height:78%}
+.cam-guides path{fill:none;stroke-width:4;stroke-linecap:round;filter:drop-shadow(0 0 3px #000)}
+.cam-guides .g-red{stroke:#ff3b30}.cam-guides .g-yellow{stroke:#ffcc00}.cam-guides .g-green{stroke:#34c759}
+.cam-guides .g-path{stroke:#ffffff55;stroke-width:2;stroke-dasharray:8 8}
+.cam-bumper{position:absolute;left:8%;right:8%;bottom:-38px;height:70px;border-radius:50% 50% 0 0;
+  background:linear-gradient(#2b2f36,#0b0c0f);box-shadow:inset 0 2px 0 #ffffff22}
+.cam-hud{position:absolute;left:12px;right:12px;top:10px;display:flex;justify-content:space-between;align-items:center}
+.cam-rec{display:flex;align-items:center;gap:7px;font-size:8px;font-weight:700;letter-spacing:.2em;color:#e6e9ee}
+.cam-rec:before{content:'';width:7px;height:7px;border-radius:50%;background:var(--m-red);box-shadow:0 0 8px var(--m-red);animation:ring 1.6s infinite}
+.cam-speed{padding:4px 9px;border-radius:8px;background:#000000a0;border:1px solid #ffffff1f;font:700 11px 'Satoshi',sans-serif;color:#fff;font-variant-numeric:tabular-nums}
+.cam-note{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:8px;font-weight:700;letter-spacing:.16em;color:#ffffffb0;text-shadow:0 1px 3px #000}
+.zone-temp{white-space:nowrap}
