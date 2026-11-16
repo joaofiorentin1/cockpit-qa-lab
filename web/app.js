@@ -136,7 +136,7 @@ function renderState(s) {
   const signals = [
     ['VEHICLE',s.vehicle],['IGNITION',s.ignition?'ON':'OFF'],['SPEED',`${s.speed_kmh} km/h`],['GEAR',s.gear],
     ['DRIVER DOOR',s.door_open?'OPEN':'CLOSED'],['BLUETOOTH',s.bluetooth?'ON':'OFF'],['USB',s.usb_connected?'CONNECTED':'DISCONNECTED'],
-    ['PHONE',s.phone_connected?'CONNECTED':'DISCONNECTED'],['PROJECTION',s.projection],['MEDIA',s.media_playing?'PLAYING':'STOPPED'],
+    ['PHONE',s.phone_connected?'CONNECTED':'DISCONNECTED'],['PROJECTION',s.projection],['MEDIA',s.media_playing?'PLAYING':'STOPPED'],['CALL',s.call_state.toUpperCase()],
     ['FAULT INJECTION',s.fault||'OFF'],['EVENT COUNT',s.events.length]
   ];
   setHtml($('#signal-list'), signals.map(([label,value]) => `<div class="signal ${signalTone(label,value)}"><small>${esc(label)}</small><strong>${esc(value)}</strong></div>`).join(''));
@@ -235,7 +235,7 @@ function setOnline(isOnline) {
   online = isOnline;
   document.body.classList.toggle('is-offline', !online);
   $('#lab-status-title').textContent = online ? 'SIMULATOR ONLINE' : 'SIMULATOR OFFLINE';
-  $('#lab-status-detail').textContent = online ? 'Local environment · 127.0.0.1' : 'Run python3 server.py';
+  $('#lab-status-detail').textContent = online ? `Connected · ${location.host}` : 'Run python3 server.py';
   toast(online ? 'Simulator reconnected' : 'Simulator unavailable. Run python3 server.py', online ? 'success' : 'error');
 }
 

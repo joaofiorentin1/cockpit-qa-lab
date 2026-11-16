@@ -1,6 +1,6 @@
 # 0010. Layered test strategy with isolated servers
 
-- **Status:** Accepted
+- **Status:** Accepted; the runner choice (`unittest`) is superseded by [0012](0012-pytest-runner-and-ci-cd-with-deploy-hook.md). The layers and rules below still apply.
 - **Date:** 2026-11-15
 
 ## Context
