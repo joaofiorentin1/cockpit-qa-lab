@@ -5,3 +5,6 @@ tests/__pycache__/
 artifacts/
 node_modules/
 .appium/
+.pytest_cache/
+.coverage
+coverage.xml
