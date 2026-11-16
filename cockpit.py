@@ -58,6 +58,7 @@ class Cockpit:
                 "volume": 68,
                 "fault": None,
                 "autopilot": False,
+                "call_state": "idle",  # idle | ringing | active
                 "events": [],
             }
             self._log("SYSTEM", "Cockpit initialized")
@@ -83,6 +84,8 @@ class Cockpit:
             if event == "play":
                 if not s["phone_connected"]:
                     raise ValueError("Cannot play projected media without a connected phone")
+                if s["call_state"] != "idle":
+                    raise ValueError("Media is muted while a call is in progress")
                 s["media_playing"] = True
                 s["media_interrupted"] = False
                 self._log("MEDIA", "Playback started")
@@ -92,7 +95,9 @@ class Cockpit:
                 self._log("MEDIA", "Playback paused")
             elif event == "phone_disconnect":
                 if s["phone_connected"]:
-                    s["media_interrupted"] = s["media_playing"]
+                    # A call already paused the media; keep that so it can still recover.
+                    s["media_interrupted"] = s["media_playing"] or (s["call_state"] != "idle" and s["media_interrupted"])
+                s["call_state"] = "idle"  # losing the phone drops the call
                 s["phone_connected"] = False
                 s["media_playing"] = False
                 s["projection"] = "Disconnected"
@@ -109,6 +114,37 @@ class Cockpit:
                 elif s["media_interrupted"]:
                     self._log("FAULT", "Injected fault: playback failed to recover")
                 self._log("CONNECTIVITY", "Phone connected; projection available")
+            elif event == "call_toggle":
+                # One manual button: ring, then answer, then hang up.
+                step = {"idle": "call_incoming", "ringing": "call_answer", "active": "call_end"}[s["call_state"]]
+                return self.dispatch(step)
+            elif event == "call_incoming":
+                if not s["phone_connected"]:
+                    raise ValueError("Connect the phone before receiving calls")
+                if s["call_state"] != "idle":
+                    raise ValueError("A call is already in progress")
+                s["call_state"] = "ringing"
+                if s["media_playing"]:
+                    # The call takes audio focus: media pauses but must be able to recover.
+                    s["media_playing"] = False
+                    s["media_interrupted"] = True
+                self._log("CALL", "Incoming call; media paused to give audio focus to the call")
+            elif event == "call_answer":
+                if s["call_state"] != "ringing":
+                    raise ValueError("No incoming call to answer")
+                s["call_state"] = "active"
+                self._log("CALL", "Call answered")
+            elif event == "call_end":
+                if s["call_state"] == "idle":
+                    raise ValueError("No call to end")
+                s["call_state"] = "idle"
+                self._log("CALL", "Call ended")
+                if s["media_interrupted"] and s["fault"] != "resume_failure":
+                    s["media_playing"] = True
+                    s["media_interrupted"] = False
+                    self._log("MEDIA", "Playback recovered after the call")
+                elif s["media_interrupted"]:
+                    self._log("FAULT", "Injected fault: playback failed to recover after the call")
             elif event == "bluetooth_toggle":
                 s["bluetooth"] = not s["bluetooth"]
                 self._log("BLUETOOTH", f"Bluetooth {'enabled' if s['bluetooth'] else 'disabled'}")

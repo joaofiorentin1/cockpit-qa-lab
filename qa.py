@@ -17,6 +17,7 @@ SCENARIOS = {
     "reverse_camera": "Reverse gear & rear camera",
     "door_safety": "Door / reverse interlock",
     "gear_interlock": "Gear selector interlock",
+    "incoming_call": "Incoming call & media recovery",
 }
 
 
@@ -127,6 +128,14 @@ class QARunner:
                     self._step("Speed change keeps Neutral", "speed_set", {"gear": "N", "speed_kmh": 20}, 20),
                     self._step("Roll to a stop in Neutral", "speed_set", {"gear": "N", "speed_kmh": 0}, 0),
                     self._step("Park once stopped", "gear_set", {"gear": "P"}, "P"),
+                ]
+            elif scenario == "incoming_call":
+                checks = [
+                    self._step("Start projected media", "play", {"media_playing": True, "call_state": "idle"}),
+                    self._step("Incoming call pauses the media", "call_incoming", {"call_state": "ringing", "media_playing": False, "media_interrupted": True}),
+                    self._step_rejected("Playback is refused during the call", "play"),
+                    self._step("Answer the call", "call_answer", {"call_state": "active", "media_playing": False}),
+                    self._step("Hang up; media resumes by itself", "call_end", {"call_state": "idle", "media_playing": True}),
                 ]
             else:
                 checks = [
