@@ -1,0 +1,49 @@
+name: CD
+
+# Deploys to Render only after CI succeeded on main. Render auto-deploy is off
+# (render.yaml), so this Deploy Hook is the single way a release goes out.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: cd-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Render
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' }}
+    environment: production
+    env:
+      RENDER_URL: ${{ vars.RENDER_URL || 'https://cockpit-qa-lab-ia85.onrender.com' }}
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "::error::Secret RENDER_DEPLOY_HOOK_URL is not set"
+            exit 1
+          fi
+          curl --fail --silent --show-error -X POST "$HOOK" > /dev/null
+          echo "Deploy triggered for ${{ github.event.workflow_run.head_sha }}"
+
+      - name: Smoke test the public service
+        run: |
+          # Free plan cold start and build can take a few minutes, so poll.
+          for i in $(seq 1 30); do
+            if curl --fail --silent --max-time 15 "$RENDER_URL/health" | grep -q '"status": "ok"'; then
+              echo "health ok after attempt $i"
+              break
+            fi
+            [ "$i" = 30 ] && { echo "::error::/health never became ready"; exit 1; }
+            sleep 10
+          done
+          scenarios=$(curl --fail --silent --max-time 15 "$RENDER_URL/api/scenarios" | python3 -c 'import json,sys; print(len(json.load(sys.stdin)))')
+          [ "$scenarios" = 5 ] || { echo "::error::expected 5 scenarios, got $scenarios"; exit 1; }
+          curl --fail --silent --max-time 15 "$RENDER_URL/api/state" | python3 -c 'import json,sys; assert json.load(sys.stdin)["gear"]'
+          echo "smoke test passed"
