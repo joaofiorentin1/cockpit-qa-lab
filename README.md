@@ -23,7 +23,7 @@ A Python state machine drives a visible cockpit, connectivity events, simulated 
 ## Highlights
 
 - **Deterministic simulator** — gear, speed, door, ignition, Bluetooth, USB and phone projection modelled as a Python state machine with safety interlocks.
-- **8 validation scenarios** — run from the UI, each step reports `expected` vs `actual` state and exports a JSON report; includes an incoming call that must pause and restore the media, a curve speed warning and a 50-cycle Bluetooth reconnection endurance run.
+- **3 validation scenarios** — run from the UI, each step reports `expected` vs `actual` state and exports a JSON report: phone reconnection and an incoming call (both fail under the injected defect) plus a door/reverse interlock (passes).
 - **Monkey / fuzz testing** — 20,000 seeded random commands per run; no sequence may break a safety invariant (reverse speed cap, no Park while moving, rear camera follows R…).
 - **Requirement-based timing test** — the rear-view camera must appear within 2.0 s of selecting reverse (FMVSS 111 S5.5.3), measured end to end in a real browser.
 - **Reproducible defect injection** — flip one switch to make a test fail on purpose and walk through root cause analysis.

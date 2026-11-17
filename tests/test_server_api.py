@@ -82,7 +82,7 @@ class ServerApiTests(unittest.TestCase):
         status, scenarios = self.get_json("/api/scenarios")
         self.assertEqual(status, 200)
         ids = [s["id"] for s in scenarios]
-        self.assertIn("gear_interlock", ids)
+        self.assertEqual(ids, ["reconnect", "incoming_call", "door_safety"])
         self.assertTrue(all(s["title"] for s in scenarios))
 
     def test_report_download_is_an_attachment(self):
