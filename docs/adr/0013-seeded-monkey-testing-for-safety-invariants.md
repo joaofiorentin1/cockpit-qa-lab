@@ -1,4 +1,4 @@
-# 0012. Seeded monkey testing for safety invariants
+# 0013. Seeded monkey testing for safety invariants
 
 - **Status:** Accepted
 - **Date:** 2026-11-16
@@ -18,6 +18,7 @@ values on purpose, and after **every** command asserts a list of invariants:
 - gear R ⇒ speed ≤ 15 km/h; gear P ⇒ speed 0; ignition off ⇒ stopped in P
 - reverse only entered at standstill with the door closed; no R ↔ D change while moving
 - media playing ⇒ phone connected ⇒ Bluetooth or USB available
+- call in progress ⇒ media paused and phone connected
 - rear camera ⇔ gear R; curve warning ⇔ speed above the curve's advisory speed
 - a refused command leaves the state unchanged (ADR 0004)
 
@@ -27,7 +28,10 @@ identically.
 ## Consequences
 
 **Positive**
-- Finds ordering bugs that example-based tests miss, at a cost of ~10 s in CI.
+- Finds ordering bugs that example-based tests miss, at a cost of a few seconds in CI.
+  First catch: once phone-call events were added, the monkey found that a `phone_connect`
+  during an active call resumed media over the call (seed 0, step 971). Fixed in
+  `cockpit.py` and pinned by `test_reconnecting_during_a_call_keeps_media_paused`.
 - Invariants double as an executable specification of the safety rules.
 - The test asserts it exercised both accepted and refused paths (>1,000 each), so it cannot pass vacuously.
 

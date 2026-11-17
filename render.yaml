@@ -4,6 +4,7 @@ services:
     runtime: python
     plan: free
     buildCommand: "true"
+    autoDeploy: false
     startCommand: "python3 server.py"
     envVars:
       - key: HOST

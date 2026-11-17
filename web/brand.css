@@ -47,7 +47,7 @@ body{background:var(--surface-0)}
 .brand{flex-direction:column;align-items:flex-start;gap:16px;padding:2px 13px 46px}
 .brand-act{height:30px;width:auto;display:block}
 .brand-product strong{display:block;font:700 14px 'Satoshi',sans-serif;letter-spacing:.01em;color:var(--text-1)}
-.brand-product small{display:block;margin-top:5px;font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--act-mint)}
+.brand-product small{display:block;margin-top:5px;font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--act-mint)}
 .brand-compact{display:none}
 .side-label{color:var(--text-3)}
 .nav-item{color:var(--text-2)}
@@ -58,7 +58,7 @@ body{background:var(--surface-0)}
 .lab-status{background:var(--surface-1);border-color:var(--line)}
 .lab-status strong{color:var(--text-1)}
 .sidebar-note{color:var(--text-3)}
-.sidebar-note span{display:block;margin-top:9px;font-size:9px;opacity:.75}
+.sidebar-note span{display:block;margin-top:9px;font-size:11px;opacity:.75}
 
 /* ---------- Live / status accents use act mint ---------- */
 .pulse,.live-dot,.stream-dot,.status-dot.green,.projection-indicator{background:var(--act-mint);box-shadow:0 0 10px #42edba99}

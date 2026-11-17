@@ -5,7 +5,7 @@
 **BMW M4-inspired infotainment test bench — simulated vehicle, live HMI and automated validation with expected-vs-actual evidence.**
 
 [![Live demo](https://img.shields.io/badge/Live_demo-cockpit--qa--lab-42EDBA?logo=render&logoColor=white)](https://cockpit-qa-lab-ia85.onrender.com)
-[![CI](https://github.com/joaofiorentin1/cockpit-qa-lab/actions/workflows/cockpit-qa.yml/badge.svg)](https://github.com/joaofiorentin1/cockpit-qa-lab/actions/workflows/cockpit-qa.yml)
+[![CI](https://github.com/joaofiorentin1/cockpit-qa-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/joaofiorentin1/cockpit-qa-lab/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Selenium](https://img.shields.io/badge/Selenium-E2E-43B02A?logo=selenium&logoColor=white)
 ![Appium](https://img.shields.io/badge/Appium-AAOS-662D91?logo=appium&logoColor=white)
@@ -23,15 +23,15 @@ A Python state machine drives a visible cockpit, connectivity events, simulated 
 ## Highlights
 
 - **Deterministic simulator** — gear, speed, door, ignition, Bluetooth, USB and phone projection modelled as a Python state machine with safety interlocks.
-- **7 validation scenarios** — run from the UI, each step reports `expected` vs `actual` state and exports a JSON report; includes a curve speed warning and a 50-cycle Bluetooth reconnection endurance run.
+- **8 validation scenarios** — run from the UI, each step reports `expected` vs `actual` state and exports a JSON report; includes an incoming call that must pause and restore the media, a curve speed warning and a 50-cycle Bluetooth reconnection endurance run.
 - **Monkey / fuzz testing** — 20,000 seeded random commands per run; no sequence may break a safety invariant (reverse speed cap, no Park while moving, rear camera follows R…).
 - **Requirement-based timing test** — the rear-view camera must appear within 2.0 s of selecting reverse (FMVSS 111 S5.5.3), measured end to end in a real browser.
 - **Reproducible defect injection** — flip one switch to make a test fail on purpose and walk through root cause analysis.
 - **Real Android Automotive** — the official AAOS emulator can be streamed and touched inside the infotainment screen; speed is injected into VHAL.
 - **Curved-display cockpit** — web cluster with speed arc and P R N D selector, a live drive bar (drive mode, connectivity, last validation), a road that scrolls with speed and dual-zone climate controls; the whole cabin switches from Comfort blue to Sport red above 120 km/h, in sync with the 3D cluster.
 - **3D instrument cluster** — Unity WebGL cluster that follows the simulator live (gear, speed, media, connectivity), with a road that scrolls with speed, a speed arc, a P R N D selector, a distant skyline and a BMW-inspired Comfort (blue) / Sport (red, above 120 km/h) theme. [Open it online](https://cockpit-qa-lab-ia85.onrender.com/unity/).
-- **CI** — unit, API, contract and Selenium browser tests on GitHub Actions.
-- **Documented decisions** — 11 [ADRs](docs/adr/README.md) explain the trade-offs behind the design.
+- **CI/CD** — pytest (unit, API, contract) on Python 3.11 and 3.12 with coverage, Selenium browser tests, and an automatic deploy to Render through a Deploy Hook only after CI is green, followed by a smoke test.
+- **Documented decisions** — 12 [ADRs](docs/adr/README.md) explain the trade-offs behind the design.
 
 ## Screenshots
 
@@ -117,21 +117,28 @@ The reasoning behind the architecture — zero-dependency backend, deterministic
 
 ## Run automated tests
 
-Core tests, no dependencies:
-
-```bash
-python3 -m unittest discover -s tests -p 'test_cockpit.py' -v
-```
-
-Browser test, with Chromium/Chrome and matching driver installed:
+The app has no dependencies; the test tools do. Install them once:
 
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install -r requirements-dev.txt
-.venv/bin/python -m unittest discover -s tests -p 'test_ui_selenium.py' -v
 ```
 
-If `python3 -m venv` is unavailable, use `uv venv .venv` and `uv pip install --python .venv/bin/python -r requirements-dev.txt`. The Selenium test starts its own local server, checks that the BMW cockpit is visible, injects a reproducible fault, checks the failed assertion and saves screenshots to `artifacts/`.
+Fast suite (unit, runner, API, contract), with coverage:
+
+```bash
+.venv/bin/pytest -m "not selenium and not appium and not aaos_live" --cov=cockpit --cov=qa --cov=server --cov=adapters
+```
+
+Browser test, with Chromium/Chrome installed:
+
+```bash
+.venv/bin/pytest -m selenium
+```
+
+Tests that need an Appium server or the AAOS emulator are skipped automatically (`-m appium`, or `RUN_AAOS_LIVE=1` for the live AAOS test). The older `unittest` suites run unchanged under pytest.
+
+If `python3 -m venv` is unavailable, use `uv venv .venv` and `uv pip install --python .venv/bin/python -r requirements-dev.txt`. The Selenium tests start their own local server, checks that the BMW cockpit is visible, injects a reproducible fault, checks the failed assertion and saves screenshots to `artifacts/`.
 
 ## Android Appium smoke test
 

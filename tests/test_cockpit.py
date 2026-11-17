@@ -135,6 +135,14 @@ class CockpitTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.cockpit.dispatch("gear_set", "X")
 
+    def test_reconnecting_during_a_call_keeps_media_paused(self):
+        # Regression found by test_monkey: phone_connect used to resume media over an active call.
+        self.cockpit.dispatch("play")
+        self.cockpit.dispatch("call_incoming")
+        self.cockpit.dispatch("call_answer")
+        self.assertFalse(self.cockpit.dispatch("phone_connect")["media_playing"])
+        self.assertTrue(self.cockpit.dispatch("call_end")["media_playing"])
+
     def test_curve_warning_follows_speed_and_curve(self):
         self.cockpit.dispatch("speed_set", 100)
         self.assertFalse(self.cockpit.dispatch("curve_set", 1)["curve_warning"])   # 100 <= 110

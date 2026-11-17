@@ -43,7 +43,7 @@ body.mode-sport{--accent:#ff5a3c;--accent-deep:#e22718}
 .drive-chips{display:flex;gap:8px}
 .drive-chip{min-width:118px;padding:8px 12px;border:1px solid #ffffff14;border-radius:12px;
   background:color-mix(in srgb,#11141a 78%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:inset 0 1px 0 #ffffff0d}
-.drive-chip small{display:block;font-size:7px;font-weight:700;letter-spacing:.18em;color:#6f7782}
+.drive-chip small{display:block;font-size:11px;font-weight:700;letter-spacing:.18em;color:#6f7782}
 .drive-chip strong{display:block;margin-top:4px;font:700 12px 'Satoshi',sans-serif;letter-spacing:.08em;color:var(--text-1);transition:color .4s}
 .drive-chip-mode{border-color:color-mix(in srgb,var(--accent) 45%,transparent);box-shadow:inset 0 1px 0 #ffffff0d,0 0 22px -6px var(--accent)}
 .drive-chip-mode strong{color:var(--accent)}
@@ -80,7 +80,7 @@ body.mode-sport{--accent:#ff5a3c;--accent-deep:#e22718}
 .speedo-value{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .speedo-value strong{font:500 52px 'Satoshi',sans-serif!important;line-height:1!important;letter-spacing:-.03em;color:#fff!important;
   text-shadow:0 0 22px color-mix(in srgb,var(--accent) 60%,transparent)!important}
-.speedo-value small{margin-top:4px;font-size:9px!important;letter-spacing:.2em!important;color:#8a93a3!important}
+.speedo-value small{margin-top:4px;font-size:11px!important;letter-spacing:.2em!important;color:#8a93a3!important}
 
 .gearbox{display:flex;flex-direction:column;align-items:center;gap:8px}
 .cluster-gear{width:auto!important;height:auto!important;border:0!important;box-shadow:none!important;border-radius:0;
@@ -117,8 +117,8 @@ body.mode-sport{--accent:#ff5a3c;--accent-deep:#e22718}
 .zone{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .zone-temp{text-align:center;line-height:1}
 .zone-temp strong{display:inline-block;font:500 32px 'Satoshi',sans-serif;letter-spacing:-.03em;color:#fff;font-variant-numeric:tabular-nums}
-.zone-temp sup{font-size:11px;color:#8a93a3;margin-left:2px;vertical-align:top}
-.zone-temp small{display:block;margin-top:6px;font-size:7px;font-weight:700;letter-spacing:.2em;color:#5f6672}
+.zone-temp sup{font-size:12px;color:#8a93a3;margin-left:2px;vertical-align:top}
+.zone-temp small{display:block;margin-top:6px;font-size:11px;font-weight:700;letter-spacing:.2em;color:#5f6672}
 .clim-btn{width:30px;height:30px;flex:none;border-radius:50%;border:1px solid #ffffff1c;background:#151922;color:#d6dbe3;font:500 16px 'Satoshi',sans-serif;line-height:1;cursor:pointer;
   transition:background .2s,border-color .2s,transform .15s var(--ease-out),box-shadow .2s}
 .clim-btn:hover{border-color:var(--accent);box-shadow:0 0 12px -2px var(--accent)}
@@ -133,7 +133,7 @@ body.mode-sport{--accent:#ff5a3c;--accent-deep:#e22718}
 .climate-toggles{display:flex;gap:5px}
 .clim-toggle{padding:4px 8px;border-radius:8px;border:1px solid #ffffff17;background:transparent;color:#6f7782;font:700 8px 'Satoshi',sans-serif;letter-spacing:.14em;cursor:pointer;transition:color .2s,border-color .2s,background .2s}
 .clim-toggle.on{color:#fff;border-color:color-mix(in srgb,var(--accent) 60%,transparent);background:color-mix(in srgb,var(--accent) 16%,transparent)}
-.console-strip{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid #ffffff0d;font-size:7px;font-weight:700;letter-spacing:.2em;color:#4a505b}
+.console-strip{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid #ffffff0d;font-size:11px;font-weight:700;letter-spacing:.2em;color:#4a505b}
 .console-strip .hazard{font-size:13px;color:#e2271899;letter-spacing:0}
 
 /* ---------- Gear selector and slider follow the accent ---------- */
@@ -172,10 +172,10 @@ body.mode-sport{--accent:#ff5a3c;--accent-deep:#e22718}
 .cam-bumper{position:absolute;left:8%;right:8%;bottom:-38px;height:70px;border-radius:50% 50% 0 0;
   background:linear-gradient(#2b2f36,#0b0c0f);box-shadow:inset 0 2px 0 #ffffff22}
 .cam-hud{position:absolute;left:12px;right:12px;top:10px;display:flex;justify-content:space-between;align-items:center}
-.cam-rec{display:flex;align-items:center;gap:7px;font-size:8px;font-weight:700;letter-spacing:.2em;color:#e6e9ee}
+.cam-rec{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:700;letter-spacing:.2em;color:#e6e9ee}
 .cam-rec:before{content:'';width:7px;height:7px;border-radius:50%;background:var(--m-red);box-shadow:0 0 8px var(--m-red);animation:ring 1.6s infinite}
 .cam-speed{padding:4px 9px;border-radius:8px;background:#000000a0;border:1px solid #ffffff1f;font:700 11px 'Satoshi',sans-serif;color:#fff;font-variant-numeric:tabular-nums}
-.cam-note{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:8px;font-weight:700;letter-spacing:.16em;color:#ffffffb0;text-shadow:0 1px 3px #000}
+.cam-note{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.16em;color:#ffffffb0;text-shadow:0 1px 3px #000}
 .zone-temp{white-space:nowrap}
 
 /* ---------- Curved road in the windshield (paths drawn by app.js) ---------- */

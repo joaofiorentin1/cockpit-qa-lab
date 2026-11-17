@@ -30,6 +30,10 @@ EVENTS = [
     ("projection_toggle", lambda r: None),
     ("fault_toggle", lambda r: None),
     ("curve_set", lambda r: r.choice([-3, -2, -1, 0, 1, 2, 3])),
+    ("call_incoming", lambda r: None),
+    ("call_answer", lambda r: None),
+    ("call_end", lambda r: None),
+    ("call_toggle", lambda r: None),
     ("volume_set", lambda r: r.choice([0, 50, 100, 101])),
 ]
 
@@ -53,6 +57,10 @@ def invariant_violations(prev, state):
         broken.append("phone connected with no Bluetooth and no USB")
     if state["phone_connected"] != (state["projection"] != "Disconnected"):
         broken.append("projection status disagrees with phone connection")
+    if state["call_state"] != "idle" and state["media_playing"]:
+        broken.append("media playing during a phone call (audio focus)")
+    if state["call_state"] != "idle" and not state["phone_connected"]:
+        broken.append("call in progress without a connected phone")
     if state["rear_camera"] != (state["gear"] == "R"):
         broken.append("rear camera does not follow gear R")
     advisory = curve_advisory(state["road_curve"])
