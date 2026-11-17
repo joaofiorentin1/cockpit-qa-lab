@@ -205,3 +205,17 @@ body.curve-warning .road-edge{stroke:#ffb547;filter:drop-shadow(0 0 5px #ffb547)
 .curve-selector .route-button.active{background:#42edba1f;border-color:var(--act-mint);color:var(--act-mint)}
 .curve-selector button:disabled{opacity:.45;cursor:not-allowed}
 @media(prefers-reduced-motion:reduce){.curve-alert b{animation:none}}
+
+/* ---------- Drive bar: title | road view | chips ---------- */
+.drive-bar{display:grid;grid-template-columns:auto minmax(180px,1fr) auto;align-items:center;gap:22px;height:96px;padding:0 26px}
+.drive-view{position:relative;height:78px;align-self:end;display:flex;justify-content:center;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
+.drive-view:before{content:'';position:absolute;left:20%;right:20%;top:2px;height:26px;border-radius:50%;
+  background:radial-gradient(ellipse,color-mix(in srgb,var(--accent) 40%,transparent),transparent 70%);filter:blur(8px)}
+.drive-svg{position:relative;width:100%;max-width:420px;height:100%;overflow:visible}
+.drive-horizon{display:none}
+.road-edge{stroke-width:2}
+.road-center{stroke-width:1.6;stroke-dasharray:9 8}
+@media(max-width:1180px){.drive-bar{gap:14px}}
+@media(max-width:900px){.drive-bar{grid-template-columns:1fr auto}.drive-view{display:none}}
+.drive-view{align-self:start;margin-top:10px;height:74px}

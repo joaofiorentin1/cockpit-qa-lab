@@ -379,13 +379,15 @@ let shownCurve = 0;
 function drawRoad(dt) {
   const target = state ? state.road_curve || 0 : 0;
   shownCurve += (target - shownCurve) * Math.min(1, dt * 2.5);
-  const c = shownCurve, hx = 500 + c * 120, cx = c * 18;
-  const left = `M190 140 Q${345 + cx} 92 ${hx - 9} 56`, right = `M810 140 Q${655 + cx} 92 ${hx + 9} 56`;
+  // viewBox 400x90: straight near the car (bottom), bending only towards the horizon.
+  const shift = shownCurve * 45, mid = shift * 0.35;
+  const left = `M60 90 C120 60 ${196 + mid} 30 ${196 + shift} 14`;
+  const right = `M340 90 C280 60 ${204 + mid} 30 ${204 + shift} 14`;
   $('#road-edge-l').setAttribute('d', left);
   $('#road-edge-r').setAttribute('d', right);
-  $('#road-surface').setAttribute('d', `${left} L${hx + 9} 56 Q${655 + cx} 92 810 140 Z`);
-  $('#road-center').setAttribute('d', `M500 140 Q${500 + cx} 92 ${hx} 56`);
-  $('#road-center').style.strokeDashoffset = (-roadOffset * 0.6).toFixed(1);
+  $('#road-surface').setAttribute('d', `${left} L${204 + shift} 14 C${204 + mid} 30 280 60 340 90 Z`);
+  $('#road-center').setAttribute('d', `M200 90 C200 60 ${200 + mid} 30 ${200 + shift} 14`);
+  $('#road-center').style.strokeDashoffset = (-roadOffset * 0.4).toFixed(1);
 }
 drawRoad(0);
 if (!reducedMotion) requestAnimationFrame(roadFrame);
