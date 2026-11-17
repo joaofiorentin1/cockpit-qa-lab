@@ -172,6 +172,28 @@ class CockpitBrowserTests(unittest.TestCase):
         self.api("/api/events", {"event": "gear_set", "value": "P"})
         self.wait.until(lambda b: not camera.is_displayed())
 
+    def test_rear_camera_appears_within_two_seconds(self):
+        """FMVSS 111 S5.5.3: the rear-view image must be shown within 2.0 s of selecting
+        reverse. Measured end to end: command sent -> camera visible in the browser."""
+        camera = self.css("#rear-camera")
+        start = time.monotonic()
+        self.api("/api/events", {"event": "gear_set", "value": "R"})
+        WebDriverWait(self.browser, 2.0, poll_frequency=0.02).until(
+            lambda b: b.execute_script("return getComputedStyle(arguments[0]).opacity", camera) == "1")
+        elapsed = time.monotonic() - start
+        self.assertLessEqual(elapsed, 2.0, f"rear camera took {elapsed:.2f} s")
+        print(f"\nrear camera visible after {elapsed * 1000:.0f} ms (limit 2000 ms)")
+
+    def test_curve_warning_is_shown_and_cleared(self):
+        self.api("/api/events", {"event": "speed_set", "value": 100})
+        self.click('[data-curve="2"]')
+        alert = self.css("#curve-alert")
+        self.wait.until(lambda b: "visible" in alert.get_attribute("class").split())
+        self.wait.until(EC.text_to_be_present_in_element((By.ID, "drive-road"), "SHARP RIGHT · 60"))
+        self.browser.save_screenshot(str(ARTIFACTS / "curve-warning.png"))
+        self.api("/api/events", {"event": "speed_set", "value": 50})
+        self.wait.until(lambda b: "visible" not in alert.get_attribute("class").split())
+
     def test_refused_gear_change_shows_an_error_toast(self):
         self.api("/api/events", {"event": "speed_set", "value": 60})
         self.click('[data-gear="P"]')

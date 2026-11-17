@@ -74,6 +74,24 @@ class QARunnerTests(unittest.TestCase):
         self.assertEqual(refused, ["Park is refused while moving", "Reverse is refused while moving"])
         self.assertEqual(report["final_state"]["gear"], "P")
 
+    def test_curve_warning_scenario_passes(self):
+        report = run_to_completion(self.runner, "curve_warning")
+        self.assertEqual(report["status"], "passed", report)
+        self.assertEqual(report["final_state"]["road_curve"], 0)
+
+    def test_bluetooth_endurance_counts_every_recovery(self):
+        report = run_to_completion(self.runner, "bt_endurance")
+        self.assertEqual(report["status"], "passed", report)
+        self.assertEqual(report["steps"][1]["actual"], {"recovered": 50})
+
+    def test_bluetooth_endurance_exposes_the_injected_fault(self):
+        self.runner.start("bt_endurance", inject_fault=True)
+        while self.runner.report()["status"] == "running":
+            time.sleep(0.01)
+        report = self.runner.report()
+        self.assertEqual(report["status"], "failed")
+        self.assertEqual(report["steps"][1]["actual"], {"recovered": 0})
+
     def test_unknown_scenario_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "Unknown scenario"):
             self.runner.start("self_destruct")

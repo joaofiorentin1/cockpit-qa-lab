@@ -17,7 +17,13 @@ SCENARIOS = {
     "reverse_camera": "Reverse gear & rear camera",
     "door_safety": "Door / reverse interlock",
     "gear_interlock": "Gear selector interlock",
+    "curve_warning": "Curve speed warning",
+    "bt_endurance": "Bluetooth reconnection endurance",
 }
+
+# Reconnection cycles in the endurance scenario (industry practice: repeated reconnects,
+# measuring the recovery rate; this bench requires 100%).
+ENDURANCE_CYCLES = 50
 
 
 class QARunner:
@@ -91,6 +97,32 @@ class QARunner:
         sleep(self.step_delay)
         return passed
 
+    def _endurance(self, label: str, cycles: int) -> bool:
+        """Disconnect/reconnect the phone `cycles` times while media plays; every cycle
+        must bring playback back. Records one step with the recovery count as evidence."""
+        recovered = 0
+        for _ in range(cycles):
+            self.cockpit.dispatch("phone_disconnect")
+            state = self.cockpit.dispatch("phone_connect")
+            if state["media_playing"]:
+                recovered += 1
+            else:  # a real head unit user would press play again; keep the next cycle meaningful
+                self.cockpit.dispatch("play")
+            sleep(self.step_delay * 0.04)
+        expected, actual = {"recovered": cycles}, {"recovered": recovered}
+        step = {
+            "label": label,
+            "event": "phone_disconnect/phone_connect",
+            "expected": expected,
+            "actual": actual,
+            "status": "passed" if actual == expected else "failed",
+            "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        }
+        with self._lock:
+            self._report["steps"].append(step)
+        sleep(self.step_delay)
+        return actual == expected
+
     def _run(self, scenario: str, inject_fault: bool) -> None:
         try:
             self.cockpit.reset()
@@ -128,12 +160,26 @@ class QARunner:
                     self._step("Roll to a stop in Neutral", "speed_set", {"gear": "N", "speed_kmh": 0}, 0),
                     self._step("Park once stopped", "gear_set", {"gear": "P"}, "P"),
                 ]
-            else:
+            elif scenario == "door_safety":
                 checks = [
                     self._step("Open the driver door", "door_toggle", {"door_open": True}),
                     self._step_rejected("Reverse is refused while the door is open", "reverse_toggle"),
                     self._step("Close the door", "door_toggle", {"door_open": False}),
                     self._step("Reverse now accepted", "reverse_toggle", {"gear": "R", "door_open": False}),
+                ]
+            elif scenario == "curve_warning":
+                checks = [
+                    self._step("Drive at 100 km/h on a straight", "speed_set", {"speed_kmh": 100, "curve_warning": False}, 100),
+                    self._step("Gentle right curve: 100 is within 110", "curve_set", {"road_curve": 1, "curve_warning": False}, 1),
+                    self._step("Sharp right curve: warning on", "curve_set", {"road_curve": 2, "curve_advisory_kmh": 60, "curve_warning": True}, 2),
+                    self._step("Slow to 55 km/h: warning clears", "speed_set", {"speed_kmh": 55, "curve_warning": False}, 55),
+                    self._step("Back to the straight", "curve_set", {"road_curve": 0, "curve_advisory_kmh": None}, 0),
+                ]
+            elif scenario == "bt_endurance":
+                checks = [
+                    self._step("Start projected media", "play", {"media_playing": True}),
+                    self._endurance(f"{ENDURANCE_CYCLES} reconnect cycles: media resumes every time", ENDURANCE_CYCLES),
+                    self._step("Phone and media still up after the run", "pause", {"phone_connected": True, "projection": "Android Auto"}),
                 ]
             passed = sum(checks)
             self._update(

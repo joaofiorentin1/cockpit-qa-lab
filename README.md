@@ -23,7 +23,9 @@ A Python state machine drives a visible cockpit, connectivity events, simulated 
 ## Highlights
 
 - **Deterministic simulator** — gear, speed, door, ignition, Bluetooth, USB and phone projection modelled as a Python state machine with safety interlocks.
-- **5 validation scenarios** — run from the UI, each step reports `expected` vs `actual` state and exports a JSON report.
+- **7 validation scenarios** — run from the UI, each step reports `expected` vs `actual` state and exports a JSON report; includes a curve speed warning and a 50-cycle Bluetooth reconnection endurance run.
+- **Monkey / fuzz testing** — 20,000 seeded random commands per run; no sequence may break a safety invariant (reverse speed cap, no Park while moving, rear camera follows R…).
+- **Requirement-based timing test** — the rear-view camera must appear within 2.0 s of selecting reverse (FMVSS 111 S5.5.3), measured end to end in a real browser.
 - **Reproducible defect injection** — flip one switch to make a test fail on purpose and walk through root cause analysis.
 - **Real Android Automotive** — the official AAOS emulator can be streamed and touched inside the infotainment screen; speed is injected into VHAL.
 - **Curved-display cockpit** — web cluster with speed arc and P R N D selector, a live drive bar (drive mode, connectivity, last validation), a road that scrolls with speed and dual-zone climate controls; the whole cabin switches from Comfort blue to Sport red above 120 km/h, in sync with the 3D cluster.
@@ -87,8 +89,9 @@ The live Android screen is **a separate integration track**: the Python media re
 2. Run **Phone reconnection & media recovery** without fault injection. It should pass 3/3 assertions.
 3. Run it again with fault injection. It should fail 2/3 assertions, showing expected versus actual `media_playing` state.
 4. Open **Telemetria** to follow the event trail used for root cause analysis.
-5. Run **Reverse gear & rear camera**: the camera turns on in R, 8 km/h is accepted, 25 km/h is refused, and the camera turns off in P.
-6. If AAOS is running, switch the multimedia display to **AAOS LIVE** to see the actual emulated Android UI.
+5. Click **▶ Drive route**: the car drives a route with curves on its own; two curves are entered too fast and raise **Reduce speed**.
+6. Run **Reverse gear & rear camera**: the camera turns on in R, 8 km/h is accepted, 25 km/h is refused, and the camera turns off in P.
+7. If AAOS is running, switch the multimedia display to **AAOS LIVE** to see the actual emulated Android UI.
 
 ## Architecture
 
@@ -164,3 +167,5 @@ In another terminal, run `.venv/bin/python adapters/appium_android_smoke.py`. It
 | Root cause analysis | Timestamped events, expected/actual values, exported JSON |
 
 The UI uses the BMW name for a demonstration simulation and contains an original CSS dashboard and steering wheel. It is not affiliated with BMW.
+
+The 3D cluster's car is "BMW M4 F82 Razor 2014" by [vecarz](https://sketchfab.com/heynic), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) ([source](https://sketchfab.com/3d-models/bmw-m4-f82-razor-2014-wwwvecarzcom-25d00f20b8cf4828bd934acb31e0aae4)). Full credits: `web/assets/CREDITS.md`.

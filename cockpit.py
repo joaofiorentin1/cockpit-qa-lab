@@ -10,18 +10,30 @@ from datetime import datetime, timezone
 from threading import RLock, Thread
 from time import sleep
 
-# (target_speed_kmh, hold_seconds) - a short loop of straights and curves for the
-# autopilot demo. Plateaus only: the HMI visualization is responsible for easing
-# between them, so this stays a simple, readable script rather than a physics sim.
+# (target_speed_kmh, hold_seconds[, road_curve]) - a short route of straights and curves
+# for the autopilot demo. Two curves are entered too fast on purpose, so the curve speed
+# warning fires and then clears once the car slows down. Plateaus only: the HMI eases
+# between them, so this stays a readable script rather than a physics sim.
 AUTOPILOT_PATTERN = [
-    (60, 4),   # accelerate onto the straight
-    (95, 5),   # cruise
-    (45, 3),   # slow for a curve
-    (90, 5),   # back up to cruise
-    (30, 3),   # sharp curve
-    (70, 4),   # cruise
-    (0, 2),    # roll to a stop
+    (60, 4, 0),    # accelerate onto the straight
+    (95, 5, 1),    # gentle right
+    (100, 4, -1),  # gentle left
+    (105, 3, 2),   # sharp right entered too fast -> warning
+    (55, 4, 2),    # slowed down -> warning clears
+    (90, 5, 0),    # straight
+    (70, 3, -2),   # sharp left too fast -> warning
+    (45, 4, -2),   # slowed down
+    (0, 2, 0),     # roll to a stop
 ]
+
+# Road curvature: -2 sharp left, -1 left, 0 straight, 1 right, 2 sharp right.
+CURVE_NAMES = {-2: "sharp left", -1: "left", 0: "straight", 1: "right", 2: "sharp right"}
+# Advisory speed per curve severity; above it the cluster shows "Reduce speed".
+CURVE_ADVISORY_KMH = {1: 110, 2: 60}
+
+
+def curve_advisory(curve: int):
+    return CURVE_ADVISORY_KMH.get(abs(curve))
 
 
 def _timestamp() -> str:
@@ -58,6 +70,7 @@ class Cockpit:
                 "volume": 68,
                 "fault": None,
                 "autopilot": False,
+                "road_curve": 0,
                 "events": [],
             }
             self._log("SYSTEM", "Cockpit initialized")
@@ -73,13 +86,21 @@ class Cockpit:
             snap = deepcopy(self._state)
             # Derived signal: the head unit shows the rear-view camera whenever R is engaged.
             snap["rear_camera"] = snap["gear"] == "R"
+            snap["curve_advisory_kmh"] = curve_advisory(snap["road_curve"])
+            snap["curve_warning"] = self._curve_warning(snap)
             return snap
+
+    @staticmethod
+    def _curve_warning(s: dict) -> bool:
+        advisory = curve_advisory(s["road_curve"])
+        return advisory is not None and s["speed_kmh"] > advisory
 
     def dispatch(self, event: str, value=None) -> dict:
         with self._lock:
             s = self._state
             if event == "reset":
                 return self.reset()
+            warned = self._curve_warning(s)
             if event == "play":
                 if not s["phone_connected"]:
                     raise ValueError("Cannot play projected media without a connected phone")
@@ -171,6 +192,12 @@ class Cockpit:
                 if s["gear"] not in {"N", "R"}:
                     s["gear"] = "D" if speed else "P"
                 self._log("CAN SIM", f"Vehicle speed signal: {speed} km/h")
+            elif event == "curve_set":
+                curve = int(value)
+                if curve not in CURVE_NAMES:
+                    raise ValueError("Road curve must be between -2 (sharp left) and 2 (sharp right)")
+                s["road_curve"] = curve
+                self._log("ROUTE", f"Road ahead: {CURVE_NAMES[curve]}")
             elif event == "fault_toggle":
                 s["fault"] = None if s["fault"] else "resume_failure"
                 self._log("FAULT", f"Recovery fault {'disabled' if not s['fault'] else 'enabled'}")
@@ -198,17 +225,22 @@ class Cockpit:
                     self._log("AUTOPILOT", "Autopilot disengaged")
             else:
                 raise ValueError(f"Unknown event: {event}")
+            if self._curve_warning(s) != warned:
+                advisory = curve_advisory(s["road_curve"])
+                self._log("ADAS", f"Curve speed warning: reduce to {advisory} km/h" if not warned else "Curve speed warning cleared")
             return self.snapshot()
 
     def _autopilot_loop(self, generation: int) -> None:
         """Background driving pattern. Exits as soon as a newer generation starts
         (autopilot toggled off, or the cockpit was reset) - never fights a QA scenario."""
         while True:
-            for target_speed, hold_seconds in AUTOPILOT_PATTERN:
+            for target_speed, hold_seconds, *curve in AUTOPILOT_PATTERN:
                 with self._lock:
                     if self._autopilot_generation != generation:
                         return
                 try:
+                    if curve:
+                        self.dispatch("curve_set", curve[0])
                     self.dispatch("speed_set", target_speed)
                 except ValueError:
                     return

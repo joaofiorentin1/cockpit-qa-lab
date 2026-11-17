@@ -135,6 +135,32 @@ class CockpitTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.cockpit.dispatch("gear_set", "X")
 
+    def test_curve_warning_follows_speed_and_curve(self):
+        self.cockpit.dispatch("speed_set", 100)
+        self.assertFalse(self.cockpit.dispatch("curve_set", 1)["curve_warning"])   # 100 <= 110
+        state = self.cockpit.dispatch("curve_set", -2)
+        self.assertEqual((state["curve_warning"], state["curve_advisory_kmh"]), (True, 60))
+        self.assertIn("reduce to 60", state["events"][0]["message"])
+        state = self.cockpit.dispatch("speed_set", 60)                               # at the limit is fine
+        self.assertFalse(state["curve_warning"])
+        self.assertIn("cleared", state["events"][0]["message"])
+        self.assertIsNone(self.cockpit.dispatch("curve_set", 0)["curve_advisory_kmh"])
+
+    def test_invalid_curve_is_refused(self):
+        for bad in (3, -3, "left"):
+            with self.subTest(curve=bad), self.assertRaises(ValueError):
+                self.cockpit.dispatch("curve_set", bad)
+        self.assertEqual(self.cockpit.snapshot()["road_curve"], 0)
+
+    def test_autopilot_route_sets_curves(self):
+        with mock.patch.object(cockpit_module, "AUTOPILOT_PATTERN", [(105, 0.05, 2)]):
+            self.cockpit.dispatch("autopilot_toggle")
+            deadline = time.time() + 2
+            while not self.cockpit.snapshot()["curve_warning"] and time.time() < deadline:
+                time.sleep(0.01)
+            self.cockpit.dispatch("autopilot_toggle")
+        self.assertEqual(self.cockpit.snapshot()["road_curve"], 2)
+
     def test_reverse_drives_backwards_up_to_the_limit(self):
         self.cockpit.dispatch("reverse_toggle")
         state = self.cockpit.dispatch("speed_set", 15)
