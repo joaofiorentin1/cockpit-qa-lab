@@ -58,3 +58,6 @@
 @media(max-width:1180px){.doc-scenarios{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:900px){.docs{grid-template-columns:1fr}.arch{grid-template-columns:1fr;gap:26px}.arch-arrow{width:2px;height:24px;margin:0 auto;background:var(--bmw-blue)}.arch-arrow:before,.arch-arrow:after,.arch-arrow span{display:none}.doc-scenarios{grid-template-columns:1fr 1fr}}
 @media(max-width:540px){.doc-scenarios,.doc-list{grid-template-columns:1fr}.docs-toc{top:70px}}
+.doc-table td.warn{color:#ffb547}
+.doc-scenarios{grid-template-columns:repeat(4,minmax(0,1fr))}@media(max-width:1180px){.doc-scenarios{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){.doc-scenarios{grid-template-columns:1fr}}

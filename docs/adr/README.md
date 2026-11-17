@@ -48,3 +48,4 @@ flowchart LR
 | [0010](0010-layered-test-strategy.md) | Layered test strategy with isolated servers | Accepted |
 | [0011](0011-honest-simulation-and-brand-boundaries.md) | Honest simulation and brand boundaries | Accepted |
 | [0012](0012-pytest-runner-and-ci-cd-with-deploy-hook.md) | pytest runner and CI/CD with a Deploy Hook | Accepted |
+| [0013](0013-seeded-monkey-testing-for-safety-invariants.md) | Seeded monkey testing for safety invariants | Accepted |

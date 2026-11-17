@@ -177,3 +177,45 @@ body.mode-sport{--accent:#ff5a3c;--accent-deep:#e22718}
 .cam-speed{padding:4px 9px;border-radius:8px;background:#000000a0;border:1px solid #ffffff1f;font:700 11px 'Satoshi',sans-serif;color:#fff;font-variant-numeric:tabular-nums}
 .cam-note{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:11px;font-weight:700;letter-spacing:.16em;color:#ffffffb0;text-shadow:0 1px 3px #000}
 .zone-temp{white-space:nowrap}
+
+/* ---------- Curved road in the windshield (paths drawn by app.js) ---------- */
+.drive-svg{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible}
+.road-edge{fill:none;stroke:var(--accent);stroke-width:2.2;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 4px var(--accent))}
+.road-center{fill:none;stroke:#ffffffb0;stroke-width:2;stroke-dasharray:14 12;vector-effect:non-scaling-stroke}
+
+/* ---------- Curve speed warning in the cluster ---------- */
+.curve-alert{position:absolute;left:50%;top:20px;transform:translateX(-50%) scale(.9);display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:6px 14px;border-radius:12px;border:1px solid #ffb54788;background:#2a1a05e6;box-shadow:0 0 24px -4px #ffb54799;
+  opacity:0;visibility:hidden;transition:opacity .25s,transform .3s var(--ease-spring),visibility 0s .25s;z-index:4;pointer-events:none}
+.curve-alert.visible{opacity:1;visibility:visible;transform:translateX(-50%) scale(1);transition:opacity .25s,transform .3s var(--ease-spring)}
+.curve-alert b{font:800 11px 'Satoshi',sans-serif;letter-spacing:.18em;color:#ffb547;animation:blink 1s steps(2,start) infinite}
+.curve-alert span{font-size:8px;font-weight:700;letter-spacing:.16em;color:#ffd9a0}
+.curve-alert em{font-style:normal;color:#fff}
+body.curve-warning .ambient-strip{background:linear-gradient(90deg,transparent,#ffb547 18%,#ffe0a8 50%,#ffb547 82%,transparent);box-shadow:0 0 18px 2px #ffb54788}
+body.curve-warning .road-edge{stroke:#ffb547;filter:drop-shadow(0 0 5px #ffb547)}
+@keyframes blink{to{visibility:hidden}}
+
+/* ---------- Road ahead selector + route ---------- */
+.curve-selector{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:12px}
+.curve-selector>span{font-size:11px;color:var(--text-2);margin-right:6px;min-width:96px}
+.curve-selector button{padding:7px 10px;border-radius:9px;border:1px solid var(--line);background:var(--surface-2);color:var(--text-2);font:600 11px 'Satoshi',sans-serif;cursor:pointer;transition:background .2s,border-color .2s,color .2s}
+.curve-selector button:hover:not(:disabled){border-color:#1c69d499;color:var(--text-1)}
+.curve-selector button.active{background:var(--accent-deep);border-color:var(--accent-deep);color:#fff}
+.curve-selector .route-button{margin-left:auto;border-color:#42edba55;color:var(--act-mint)}
+.curve-selector .route-button.active{background:#42edba1f;border-color:var(--act-mint);color:var(--act-mint)}
+.curve-selector button:disabled{opacity:.45;cursor:not-allowed}
+@media(prefers-reduced-motion:reduce){.curve-alert b{animation:none}}
+
+/* ---------- Drive bar: title | road view | chips ---------- */
+.drive-bar{display:grid;grid-template-columns:auto minmax(180px,1fr) auto;align-items:center;gap:22px;height:96px;padding:0 26px}
+.drive-view{position:relative;height:78px;align-self:end;display:flex;justify-content:center;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent)}
+.drive-view:before{content:'';position:absolute;left:20%;right:20%;top:2px;height:26px;border-radius:50%;
+  background:radial-gradient(ellipse,color-mix(in srgb,var(--accent) 40%,transparent),transparent 70%);filter:blur(8px)}
+.drive-svg{position:relative;width:100%;max-width:420px;height:100%;overflow:visible}
+.drive-horizon{display:none}
+.road-edge{stroke-width:2}
+.road-center{stroke-width:1.6;stroke-dasharray:9 8}
+@media(max-width:1180px){.drive-bar{gap:14px}}
+@media(max-width:900px){.drive-bar{grid-template-columns:1fr auto}.drive-view{display:none}}
+.drive-view{align-self:start;margin-top:10px;height:74px}

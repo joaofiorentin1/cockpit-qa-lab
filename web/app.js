@@ -107,6 +107,7 @@ function renderState(s) {
   document.querySelectorAll('#prnd-row [data-g]').forEach((g) => g.classList.toggle('active', g.dataset.g === s.gear));
   renderDriveMode(s);
   $('.infotainment-panel').classList.toggle('reverse-active', Boolean(s.rear_camera));
+  renderRoad(s);
   $('#cam-speed').textContent = `R · ${s.speed_kmh} km/h`;
   $('#gear-text').textContent = {R:'Reverse', N:'Neutral', D:'Drive'}[s.gear] || 'Park';
   document.querySelectorAll('[data-gear]').forEach((b) => b.classList.toggle('active', b.dataset.gear === s.gear));
@@ -158,6 +159,23 @@ function renderDriveMode(s) {
   $('#drive-links').dataset.tone = links === 3 ? 'ok' : links ? 'warn' : 'off';
 }
 
+// Road ahead: curve selector, drive-bar chip, the curve warning and the route toggle.
+const CURVE_LABEL = {'-2':'SHARP LEFT','-1':'LEFT','0':'STRAIGHT','1':'RIGHT','2':'SHARP RIGHT'};
+function renderRoad(s) {
+  const curve = String(s.road_curve ?? 0);
+  document.querySelectorAll('[data-curve]').forEach((b) => b.classList.toggle('active', b.dataset.curve === curve));
+  $('#drive-road').textContent = s.curve_advisory_kmh ? `${CURVE_LABEL[curve]} · ${s.curve_advisory_kmh}` : CURVE_LABEL[curve];
+  $('#drive-road').dataset.tone = s.curve_warning ? 'fault' : s.curve_advisory_kmh ? 'warn' : '';
+  const alert = $('#curve-alert');
+  if (s.curve_warning && !alert.classList.contains('visible')) replay(alert, 'pop');
+  alert.classList.toggle('visible', Boolean(s.curve_warning));
+  $('#curve-alert-limit').textContent = s.curve_advisory_kmh ?? '';
+  document.body.classList.toggle('curve-warning', Boolean(s.curve_warning));
+  $('#route-button').classList.toggle('active', Boolean(s.autopilot));
+  $('#route-button').textContent = s.autopilot ? '■ Stop route' : '▶ Drive route';
+  if (reducedMotion) drawRoad(1);
+}
+
 // Colour-codes telemetry values so state reads at a glance: ok / warn / fault / off.
 function signalTone(label, value) {
   const v = String(value);
@@ -206,7 +224,7 @@ function renderReport(r) {
   $('#result-summary').textContent = r.summary || (r.status === 'running' ? `${steps.length} steps completed` : 'Waiting for execution');
   $('#result-time').textContent = r.finished_at ? time(r.finished_at) : '—';
   $('#run-button').disabled = r.status === 'running';
-  document.querySelectorAll('[data-event],[data-gear]').forEach((button) => { button.disabled = r.status === 'running'; });
+  document.querySelectorAll('[data-event],[data-gear],[data-curve]').forEach((button) => { button.disabled = r.status === 'running'; });
   $('#speed-slider').disabled = r.status === 'running';
   if (autoReturnToResults && previous === 'running' && r.status !== 'running') {
     autoReturnToResults = false;
@@ -244,6 +262,7 @@ function setOnline(isOnline) {
 document.querySelectorAll('.nav-item[data-tab]').forEach((item) => item.addEventListener('click', () => tab(item.dataset.tab)));
 document.querySelectorAll('[data-event]').forEach((item) => item.addEventListener('click', () => event(item.dataset.event)));
 document.querySelectorAll('[data-gear]').forEach((item) => item.addEventListener('click', () => event('gear_set', item.dataset.gear)));
+document.querySelectorAll('[data-curve]').forEach((item) => item.addEventListener('click', () => event('curve_set', Number(item.dataset.curve))));
 document.querySelectorAll('.scenario').forEach((item) => item.addEventListener('click', () => {
   document.querySelectorAll('.scenario').forEach((other) => other.classList.remove('selected'));
   item.classList.add('selected');
@@ -351,8 +370,26 @@ function roadFrame(now) {
   const velocity = state ? state.speed_kmh * (state.gear === 'R' ? -1 : 1) : 0;
   roadOffset = ((roadOffset + velocity * dt * 1.6) % 4000 + 4000) % 4000;
   document.documentElement.style.setProperty('--road', `${roadOffset.toFixed(1)}px`);
+  drawRoad(dt);
   requestAnimationFrame(roadFrame);
 }
+// Windshield road: two edges and a dashed centre line as quadratic curves whose vanishing
+// point slides sideways with the road curvature (eased, so curves come in smoothly).
+let shownCurve = 0;
+function drawRoad(dt) {
+  const target = state ? state.road_curve || 0 : 0;
+  shownCurve += (target - shownCurve) * Math.min(1, dt * 2.5);
+  // viewBox 400x90: straight near the car (bottom), bending only towards the horizon.
+  const shift = shownCurve * 45, mid = shift * 0.35;
+  const left = `M60 90 C120 60 ${196 + mid} 30 ${196 + shift} 14`;
+  const right = `M340 90 C280 60 ${204 + mid} 30 ${204 + shift} 14`;
+  $('#road-edge-l').setAttribute('d', left);
+  $('#road-edge-r').setAttribute('d', right);
+  $('#road-surface').setAttribute('d', `${left} L${204 + shift} 14 C${204 + mid} 30 280 60 340 90 Z`);
+  $('#road-center').setAttribute('d', `M200 90 C200 60 ${200 + mid} 30 ${200 + shift} 14`);
+  $('#road-center').style.strokeDashoffset = (-roadOffset * 0.4).toFixed(1);
+}
+drawRoad(0);
 if (!reducedMotion) requestAnimationFrame(roadFrame);
 
 updateClock(); setInterval(updateClock,15000); refresh(); setInterval(refresh,450);

@@ -15,3 +15,7 @@ sponsored by BMW AG or act digital. All trademarks belong to their owners.
 - act digital: graphite/black surfaces, mint accent `#42EDBA` (live / passed states).
 - BMW: BMW blue `#1C69D4` for interactive elements.
 - BMW M stripe: `#0066B1`, `#003D78`, `#E22718` (taken from the official M logo).
+
+## 3D model (Unity cluster)
+
+- **"BMW M4 F82 Razor 2014 | www.vecarz.com"** by [vecarz](https://sketchfab.com/heynic), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Source: https://sketchfab.com/3d-models/bmw-m4-f82-razor-2014-wwwvecarzcom-25d00f20b8cf4828bd934acb31e0aae4. Changes: collision/shadow meshes hidden, scaled, rotated, tail lamps made emissive, recoloured at runtime by the cluster theme. Used in the Unity WebGL build (`web/unity/`).
