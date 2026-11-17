@@ -146,7 +146,7 @@ class CockpitBrowserTests(unittest.TestCase):
         self.browser.save_screenshot(str(ARTIFACTS / "failure-report.png"))
 
     def test_new_interlock_scenarios_pass_in_the_ui(self):
-        for scenario in ("door_safety", "gear_interlock"):
+        for scenario in ("door_safety", "incoming_call"):
             with self.subTest(scenario=scenario):
                 self.assertEqual(self.run_scenario(scenario), "passed")
                 self.assertNotIn("FAIL", self.css("#test-steps").text)

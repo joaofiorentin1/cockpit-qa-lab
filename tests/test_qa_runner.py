@@ -53,11 +53,11 @@ class QARunnerTests(unittest.TestCase):
     def test_each_run_starts_from_a_clean_cockpit(self):
         self.cockpit.dispatch("speed_set", 120)
         self.cockpit.dispatch("door_set", True)
-        report = run_to_completion(self.runner, "reverse_camera")
+        report = run_to_completion(self.runner, "reconnect")
         self.assertEqual(report["status"], "passed")
 
     def test_steps_record_expected_and_actual_evidence(self):
-        report = run_to_completion(self.runner, "usb_fallback")
+        report = run_to_completion(self.runner, "reconnect")
         for step in report["steps"]:
             self.assertEqual(set(step), {"label", "event", "expected", "actual", "status", "timestamp"})
             self.assertEqual(step["expected"], step["actual"])
@@ -67,30 +67,16 @@ class QARunnerTests(unittest.TestCase):
         refused = next(step for step in report["steps"] if step["expected"] == {"error": "<raised>"})
         self.assertIn("door", refused["actual"]["error"])
 
-    def test_gear_interlock_scenario_covers_prnd_rules(self):
-        report = run_to_completion(self.runner, "gear_interlock")
-        self.assertEqual(report["status"], "passed", report)
-        refused = [step["label"] for step in report["steps"] if step["expected"] == {"error": "<raised>"}]
-        self.assertEqual(refused, ["Park is refused while moving", "Reverse is refused while moving"])
-        self.assertEqual(report["final_state"]["gear"], "P")
-
-    def test_curve_warning_scenario_passes(self):
-        report = run_to_completion(self.runner, "curve_warning")
-        self.assertEqual(report["status"], "passed", report)
-        self.assertEqual(report["final_state"]["road_curve"], 0)
-
-    def test_bluetooth_endurance_counts_every_recovery(self):
-        report = run_to_completion(self.runner, "bt_endurance")
-        self.assertEqual(report["status"], "passed", report)
-        self.assertEqual(report["steps"][1]["actual"], {"recovered": 50})
-
-    def test_bluetooth_endurance_exposes_the_injected_fault(self):
-        self.runner.start("bt_endurance", inject_fault=True)
-        while self.runner.report()["status"] == "running":
-            time.sleep(0.01)
-        report = self.runner.report()
+    def test_incoming_call_exposes_the_injected_fault(self):
+        report = run_to_completion(self.runner, "incoming_call", inject_fault=True)
         self.assertEqual(report["status"], "failed")
-        self.assertEqual(report["steps"][1]["actual"], {"recovered": 0})
+        self.assertEqual(report["summary"], "4/5 checks passed")
+        failed = [step for step in report["steps"] if step["status"] == "failed"]
+        self.assertEqual([step["event"] for step in failed], ["call_end"])
+
+    def test_door_safety_is_unaffected_by_the_injected_fault(self):
+        report = run_to_completion(self.runner, "door_safety", inject_fault=True)
+        self.assertEqual(report["status"], "passed", report)
 
     def test_unknown_scenario_is_rejected(self):
         with self.assertRaisesRegex(ValueError, "Unknown scenario"):
@@ -102,18 +88,18 @@ class QARunnerTests(unittest.TestCase):
         slow.start("reconnect")
         try:
             with self.assertRaisesRegex(ValueError, "already running"):
-                slow.start("usb_fallback")
+                slow.start("door_safety")
         finally:
             while slow.report()["status"] == "running":
                 time.sleep(0.02)
 
     def test_report_is_a_copy(self):
-        report = run_to_completion(self.runner, "reverse_camera")
+        report = run_to_completion(self.runner, "reconnect")
         report["steps"].clear()
         self.assertTrue(self.runner.report()["steps"])
 
     def test_scenario_catalog_has_titles(self):
-        self.assertGreaterEqual(len(SCENARIOS), 5)
+        self.assertEqual(list(SCENARIOS), ["reconnect", "incoming_call", "door_safety"])
         for key, title in SCENARIOS.items():
             self.assertRegex(key, r"^[a-z_]+$")
             self.assertTrue(title.strip())
