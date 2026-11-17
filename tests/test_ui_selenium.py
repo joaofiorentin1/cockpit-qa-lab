@@ -103,26 +103,6 @@ class CockpitBrowserTests(unittest.TestCase):
         self.wait.until(lambda b: "active" in self.css(f"#{name}-page").get_attribute("class"))
         self.settle()
 
-    def run_scenario(self, scenario, fault=False):
-        self.open_tab("validation")
-        self.click(f'.scenario:has(input[value="{scenario}"])')
-        if fault:
-            self.click(".fault-option")
-        before = self.report()
-        self.click("#run-button")
-        # The banner still shows the previous run's result until the next poll, so first wait for
-        # the server to finish *this* run, then for the banner to show its status. Match against
-        # the whole class list: a "pop" animation class can be appended after the status.
-        finished = {"passed", "failed", "error"}
-        self.wait.until(lambda b: (r := self.report())["status"] in finished and r != before)
-        status = self.report()["status"]
-        self.wait.until(lambda b: status in self.css("#run-banner").get_attribute("class").split())
-        return status
-
-    def report(self):
-        with urlopen(self.base + "/api/report", timeout=5) as resp:
-            return json.loads(resp.read())
-
     # ---------- tests ----------
 
     def test_branding_is_present(self):
@@ -134,22 +114,6 @@ class CockpitBrowserTests(unittest.TestCase):
         font = self.browser.execute_script("return getComputedStyle(document.body).fontFamily")
         self.assertIn("Satoshi", font)
         self.browser.save_screenshot(str(ARTIFACTS / "cockpit.png"))
-
-    def test_reproducible_failure_is_reported(self):
-        self.assertEqual(self.run_scenario("reconnect", fault=True), "failed")
-        # Elements fade in, and Selenium's .text is empty while they are invisible, so wait for them.
-        for selector, text in (("#run-banner strong", "Defect detected"), ("#test-steps", "FAIL"),
-                               ("#result-summary", "2/3 checks passed")):
-            with self.subTest(selector=selector):
-                self.wait.until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, selector), text))
-        self.settle()
-        self.browser.save_screenshot(str(ARTIFACTS / "failure-report.png"))
-
-    def test_new_interlock_scenarios_pass_in_the_ui(self):
-        for scenario in ("door_safety", "gear_interlock"):
-            with self.subTest(scenario=scenario):
-                self.assertEqual(self.run_scenario(scenario), "passed")
-                self.assertNotIn("FAIL", self.css("#test-steps").text)
 
     def test_gear_buttons_drive_the_cluster(self):
         for gear in ("D", "N", "R", "P"):
@@ -238,7 +202,7 @@ class CockpitBrowserTests(unittest.TestCase):
         self.wait.until(lambda b: "active" in self.css("#telemetry-page").get_attribute("class"))
 
     def test_no_javascript_errors(self):
-        self.open_tab("validation")
+        self.open_tab("telemetry")
         self.open_tab("cockpit")
         # Refused commands answer 4xx by design; Chrome logs those as "Failed to load resource".
         errors = [e for e in self.browser.get_log("browser")

@@ -91,9 +91,6 @@ class WebContractTests(unittest.TestCase):
         assignment = re.search(r"dataset\.gear\s*=(?!=)", self.js)
         self.assertIsNone(assignment, "app.js must not tag non-button elements with data-gear")
 
-    def test_scenario_cards_match_the_backend_catalog(self):
-        self.assertEqual(self.page.scenarios, list(SCENARIOS))
-
     def test_every_id_used_by_app_js_exists(self):
         used = set(re.findall(r"\$\('#([\w-]+)'\)", self.js))
         used |= {"bt-status", "usb-status", "phone-status"}  # built as `#${id}` from a list in renderState

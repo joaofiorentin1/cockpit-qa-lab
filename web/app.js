@@ -1,13 +1,11 @@
 const $ = (selector) => document.querySelector(selector);
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const TABS = ['cockpit', 'validation', 'telemetry', 'docs'];
+const TABS = ['cockpit', 'telemetry', 'docs'];
 const SPEED_MAX = 180;
 
 let state = null;
-let report = null;
 let selectedTab = 'cockpit';
-let autoReturnToResults = false;
 let androidOnline = false;
 let aaosActive = false;
 let androidSize = {width:1024,height:768};
@@ -76,7 +74,7 @@ function tab(name) {
     if (active && changed) replay(page, 'page-enter');
   });
   document.querySelectorAll('.nav-item[data-tab]').forEach((item) => item.classList.toggle('active', item.dataset.tab === name));
-  $('#page-title').innerHTML = name === 'cockpit' ? 'Cockpit <span>Overview</span>' : name === 'validation' ? 'Test <span>Validation</span>' : name === 'docs' ? 'Lab <span>Documentation</span>' : 'System <span>Telemetry</span>';
+  $('#page-title').innerHTML = name === 'cockpit' ? 'Cockpit <span>Overview</span>' : name === 'docs' ? 'Lab <span>Documentation</span>' : 'System <span>Telemetry</span>';
   history.replaceState(null, '', `#${name}`);
 }
 if (TABS.includes(location.hash.slice(1))) tab(location.hash.slice(1));
@@ -201,38 +199,6 @@ function eventHtml(event, isNew) {
   return `<div class="event-item${isNew ? ' enter' : ''}${tone}"><time>${esc(time(event.time))}</time><div><strong>${esc(event.source)}</strong><span>${esc(event.message)}</span></div></div>`;
 }
 
-// ---------- validation report ----------
-
-function renderReport(r) {
-  const previous = report?.status;
-  report = r;
-  const labels = {idle:'No run yet',running:'Validation in progress',passed:'All checks passed',failed:'Defect detected',error:'Execution error'};
-  const descriptions = {idle:'Select a scenario and run the validation.',running:'Python is driving the simulated cockpit.',passed:'The observed state matched every expected value.',failed:'Open the failed step to inspect expected and actual state.',error:r.summary};
-  const icon = {idle:'◇',running:'◌',passed:'✓',failed:'!',error:'!'};
-  const banner = $('#run-banner');
-  banner.className = `run-banner ${r.status}`;
-  const progress = r.status === 'running' ? '<span class="run-progress" aria-hidden="true"></span>' : '';
-  if (setHtml(banner, `<span class="run-icon">${icon[r.status]||'◇'}</span><div><strong>${labels[r.status]||esc(r.status)}</strong><small>${esc(descriptions[r.status]||'')}</small></div>${progress}`) && previous && previous !== r.status) replay(banner, 'pop');
-  const testLabel = {idle:'NO RUN YET',running:'RUNNING…',passed:'PASSED',failed:'DEFECT FOUND',error:'ERROR'};
-  $('#drive-test').textContent = testLabel[r.status] || String(r.status).toUpperCase();
-  $('#drive-test').dataset.tone = {passed:'ok',failed:'fault',error:'fault',running:'run'}[r.status] || 'off';
-  const steps = r.steps || [];
-  const container = $('#test-steps');
-  const already = Number(container.dataset.count || 0);
-  const html = steps.map((step,index) => `<div class="step${index >= already && previous ? ' enter' : ''} step-${esc(step.status)}"><div><strong>${String(index+1).padStart(2,'0')} · ${esc(step.label)}</strong><small>Expected: ${esc(JSON.stringify(step.expected))}<br>Actual: ${esc(JSON.stringify(step.actual))}</small></div><b class="${esc(step.status)}">${step.status==='passed'?'PASS':'FAIL'}</b></div>`).join('');
-  if (setHtml(container, html)) container.dataset.count = steps.length;
-  $('#result-summary').textContent = r.summary || (r.status === 'running' ? `${steps.length} steps completed` : 'Waiting for execution');
-  $('#result-time').textContent = r.finished_at ? time(r.finished_at) : '—';
-  $('#run-button').disabled = r.status === 'running';
-  document.querySelectorAll('[data-event],[data-gear],[data-curve]').forEach((button) => { button.disabled = r.status === 'running'; });
-  $('#speed-slider').disabled = r.status === 'running';
-  if (autoReturnToResults && previous === 'running' && r.status !== 'running') {
-    autoReturnToResults = false;
-    tab('validation');
-    toast(r.status === 'passed' ? 'Validation passed' : 'Validation found a defect', r.status === 'passed' ? 'success' : 'error');
-  }
-}
-
 // ---------- server I/O ----------
 
 async function getJson(path, options) {
@@ -280,16 +246,6 @@ $('#speed-slider').addEventListener('input', (e) => {
   speedTimer = setTimeout(() => event('speed_set',Number(e.target.value)),180);
 });
 $('#speed-slider').addEventListener('change', (e) => e.target.blur());
-$('#run-button').addEventListener('click', async () => {
-  try {
-    const scenario = document.querySelector('input[name="scenario"]:checked').value;
-    const inject_fault = $('#inject-fault').checked;
-    renderReport(await getJson('/api/scenarios',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({scenario,inject_fault})}));
-    autoReturnToResults = true;
-    tab('cockpit');
-    toast('Python validation running · watch the cockpit');
-  } catch (error) { toast(error.message, 'error'); }
-});
 $('#android-mode').addEventListener('click', () => {
   if (!androidOnline) return;
   aaosActive = !aaosActive;
@@ -332,9 +288,9 @@ function updateClock() {
 }
 async function refresh() {
   try {
-    const [s,r] = await Promise.all([getJson('/api/state'),getJson('/api/report')]);
+    const s = await getJson('/api/state');
     setOnline(true);
-    renderState(s); renderReport(r);
+    renderState(s);
   } catch { setOnline(false); }
 }
 // ---------- climate (local UI only: the simulator has no HVAC signals) ----------

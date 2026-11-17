@@ -25,7 +25,6 @@
       <div class="side-label">WORKSPACE</div>
       <nav class="side-nav" aria-label="Navegação">
         <button class="nav-item active" data-tab="cockpit"><span>◫</span> Cockpit <b>01</b></button>
-        <button class="nav-item" data-tab="validation"><span>◇</span> Validação</button>
         <button class="nav-item" data-tab="telemetry"><span>≋</span> Telemetria</button>
         <button class="nav-item" data-tab="docs"><span>☰</span> Como funciona</button>
         <a class="nav-item nav-external" href="/unity/" target="_blank" rel="noopener" title="Abre o painel de instrumentos em Unity numa nova aba"><span>◎</span> Cluster 3D <b>↗</b></a>
@@ -50,7 +49,7 @@
       <section class="page active" id="cockpit-page">
         <div class="intro-row"><div><h2>BMW M4 <em>Simulation</em><img class="title-m" src="/assets/logos/bmw-m.svg" alt="BMW M"></h2><p>Digital cockpit · infotainment validation environment</p></div><span class="build-tag">BUILD 01.0 · PYTHON ENGINE</span></div>
         <div class="dashboard">
-          <div class="windshield"><div class="drive-road" aria-hidden="true"><span class="drive-horizon"></span></div><div class="drive-bar"><div class="windshield-label">BMW M4 · DIGITAL TEST COCKPIT <span>SIMULATED ENVIRONMENT</span></div><div class="drive-view"><svg class="drive-svg" viewBox="0 0 400 90" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><defs><linearGradient id="road-fill" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#121722"/><stop offset="1" stop-color="#0a0d13" stop-opacity="0"/></linearGradient></defs><path id="road-surface" fill="url(#road-fill)"/><path id="road-edge-l" class="road-edge"/><path id="road-edge-r" class="road-edge"/><path id="road-center" class="road-center"/></svg></div><div class="drive-chips"><div class="drive-chip drive-chip-mode"><small>DRIVE MODE</small><strong id="drive-mode">COMFORT</strong></div><div class="drive-chip"><small>CONNECTIVITY</small><strong id="drive-links">3/3 ONLINE</strong></div><div class="drive-chip"><small>ROAD AHEAD</small><strong id="drive-road">STRAIGHT</strong></div><div class="drive-chip"><small>LAST VALIDATION</small><strong id="drive-test">NO RUN YET</strong></div></div></div></div>
+          <div class="windshield"><div class="drive-road" aria-hidden="true"><span class="drive-horizon"></span></div><div class="drive-bar"><div class="windshield-label">BMW M4 · DIGITAL TEST COCKPIT <span>SIMULATED ENVIRONMENT</span></div><div class="drive-view"><svg class="drive-svg" viewBox="0 0 400 90" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><defs><linearGradient id="road-fill" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#121722"/><stop offset="1" stop-color="#0a0d13" stop-opacity="0"/></linearGradient></defs><path id="road-surface" fill="url(#road-fill)"/><path id="road-edge-l" class="road-edge"/><path id="road-edge-r" class="road-edge"/><path id="road-center" class="road-center"/></svg></div><div class="drive-chips"><div class="drive-chip drive-chip-mode"><small>DRIVE MODE</small><strong id="drive-mode">COMFORT</strong></div><div class="drive-chip"><small>CONNECTIVITY</small><strong id="drive-links">3/3 ONLINE</strong></div><div class="drive-chip"><small>ROAD AHEAD</small><strong id="drive-road">STRAIGHT</strong></div></div></div></div>
           <div class="ambient-strip" aria-hidden="true"></div>
           <section class="vehicle-panel">
             <div class="panel-top"><span>VEHICLE STATUS</span><span class="signal-id">CAN SIM / 0x001</span></div>
@@ -109,11 +108,9 @@
         </div>
       </section>
 
-      <section class="page" id="validation-page"><div class="intro-row"><div><h2>Validation <em>Console</em></h2><p>Execute Python scenarios against the live cockpit</p></div><span class="build-tag">PYTHON · ASSERTIONS · EVIDENCE</span></div><div class="validation-grid"><section class="test-panel"><div class="section-heading"><div><small>TEST SUITE</small><h3>Choose a scenario</h3></div></div><div class="scenario-list"><label class="scenario selected"><input type="radio" name="scenario" value="reconnect" checked><span class="scenario-icon">01</span><span><strong>Phone reconnection & media recovery</strong><small>Disconnect during playback, reconnect, verify recovery</small></span><span class="radio-dot"></span></label><label class="scenario"><input type="radio" name="scenario" value="usb_fallback"><span class="scenario-icon">02</span><span><strong>USB connectivity fallback</strong><small>Disable Bluetooth, retain projection on USB, unplug</small></span><span class="radio-dot"></span></label><label class="scenario"><input type="radio" name="scenario" value="reverse_camera"><span class="scenario-icon">03</span><span><strong>Reverse gear &amp; rear camera</strong><small>Camera on in R, reverse capped at 15 km/h, camera off in P</small></span><span class="radio-dot"></span></label><label class="scenario"><input type="radio" name="scenario" value="door_safety"><span class="scenario-icon">04</span><span><strong>Door / reverse interlock</strong><small>Reverse is refused while the driver door is open</small></span><span class="radio-dot"></span></label><label class="scenario"><input type="radio" name="scenario" value="gear_interlock"><span class="scenario-icon">05</span><span><strong>Gear selector interlock</strong><small>P and R refused while moving, N allowed when coasting</small></span><span class="radio-dot"></span></label><label class="scenario"><input type="radio" name="scenario" value="curve_warning"><span class="scenario-icon">06</span><span><strong>Curve speed warning</strong><small>Sharp curve above its advisory speed raises "Reduce speed"; it clears when slowing</small></span><span class="radio-dot"></span></label><label class="scenario"><input type="radio" name="scenario" value="bt_endurance"><span class="scenario-icon">07</span><span><strong>Bluetooth reconnection endurance</strong><small>50 disconnect / reconnect cycles, media must resume every time</small></span><span class="radio-dot"></span></label><label class="scenario"><input type="radio" name="scenario" value="incoming_call"><span class="scenario-icon">08</span><span><strong>Incoming call &amp; media recovery</strong><small>Call pauses media, playback is refused, media resumes after hang-up</small></span><span class="radio-dot"></span></label></div><label class="fault-option"><input type="checkbox" id="inject-fault"><span><strong>Inject a reproducible defect</strong><small>Playback will fail to recover after reconnection</small></span><span class="toggle-track"></span></label><button class="run-button" id="run-button"><span>▶</span> Run validation</button><p class="hint">The test runs in Python. Watch the cockpit tab as vehicle state changes.</p></section><section class="results-panel"><div class="section-heading"><div><small>TEST EXECUTION</small><h3>Evidence & results</h3></div><a href="/api/report/download" id="download-report" download>↓ JSON report</a></div><div class="run-banner" id="run-banner"><span class="run-icon">◇</span><div><strong>No run yet</strong><small>Select a scenario and run the validation.</small></div></div><div class="steps" id="test-steps"></div><div class="results-footer"><span id="result-summary">Waiting for execution</span><span id="result-time">—</span></div></section></div></section>
-
       <section class="page" id="telemetry-page"><div class="intro-row"><div><h2>Signal <em>Monitor</em></h2><p>Current signals and event history for root cause analysis</p></div><span class="build-tag">SIMULATED VEHICLE BUS</span></div><div class="telemetry-grid"><section class="telemetry-card"><div class="section-heading"><div><small>LIVE SIGNALS</small><h3>Vehicle & head unit</h3></div></div><div id="signal-list" class="signal-list"></div></section><section class="telemetry-card"><div class="section-heading"><div><small>RAW EVIDENCE</small><h3>Event timeline</h3></div></div><div id="telemetry-events" class="telemetry-events"></div></section></div></section>
-      <section class="page" id="docs-page"><div class="intro-row"><div><h2>How it <em>works</em></h2><p>Architecture, safety rules, validation scenarios and the automated test suite</p></div><span class="build-tag">DOCUMENTATION</span></div>
-        <nav class="docs-toc" aria-label="Documentation sections"><a href="#doc-architecture">Architecture</a><a href="#doc-flow">Signal flow</a><a href="#doc-rules">Safety rules</a><a href="#doc-scenarios">Scenarios</a><a href="#doc-defect">Defect &amp; RCA</a><a href="#doc-tests">Test suite</a><a href="#doc-api">API</a><a href="#doc-decisions">Decisions</a></nav>
+      <section class="page" id="docs-page"><div class="intro-row"><div><h2>How it <em>works</em></h2><p>Architecture, safety rules and the automated test suite</p></div><span class="build-tag">DOCUMENTATION</span></div>
+        <nav class="docs-toc" aria-label="Documentation sections"><a href="#doc-architecture">Architecture</a><a href="#doc-flow">Signal flow</a><a href="#doc-rules">Safety rules</a><a href="#doc-tests">Test suite</a><a href="#doc-api">API</a><a href="#doc-decisions">Decisions</a></nav>
         <div class="docs">
           <section class="doc-card doc-wide" id="doc-architecture"><div class="section-heading"><div><small>01 · ARCHITECTURE</small><h3>One simulator, many clients</h3></div></div>
             <p>A single Python process owns the vehicle state. Every screen, the QA runner and the hardware adapters read and change that state through the same HTTP API, so what a test asserts is exactly what the cockpit shows.</p>
@@ -159,30 +156,7 @@
             </tbody></table>
           </section>
 
-          <section class="doc-card doc-wide" id="doc-scenarios"><div class="section-heading"><div><small>04 · VALIDATION SCENARIOS</small><h3>What each scenario proves</h3></div><span>VALIDATION TAB</span></div>
-            <p>Pick a scenario on the Validation tab and press <b>Run validation</b>. Python drives the cockpit step by step; each step records the <b>expected</b> and the <b>actual</b> state and is marked PASS or FAIL. The JSON report is the evidence.</p>
-            <div class="doc-scenarios">
-              <article><span>01</span><h4>Phone reconnection &amp; media recovery</h4><p>Play → disconnect the phone → reconnect. Media must resume by itself.</p><em>Recovery after a connectivity drop</em></article>
-              <article><span>02</span><h4>USB connectivity fallback</h4><p>Connect USB → turn Bluetooth off (projection must stay) → unplug USB (projection drops).</p><em>Redundant channels</em></article>
-              <article><span>03</span><h4>Reverse gear &amp; rear camera</h4><p>Engage R (camera on) → reverse at 8 km/h → 25 km/h is refused → stop → P (camera off).</p><em>Signal + derived function + limit</em></article>
-              <article><span>04</span><h4>Door / reverse interlock</h4><p>Open the door → reverse is refused → close the door → reverse is accepted.</p><em>Negative test: the system must say no</em></article>
-              <article><span>05</span><h4>Gear selector interlock</h4><p>D at 60 km/h → P and R refused → N allowed → slow to 0 → P.</p><em>Positive and negative cases</em></article>
-              <article><span>06</span><h4>Curve speed warning</h4><p>100 km/h in a gentle curve is fine → a sharp curve raises "Reduce speed" → slowing to 55 clears it.</p><em>ADAS-style alert with thresholds</em></article>
-              <article><span>07</span><h4>Bluetooth reconnection endurance</h4><p>50 disconnect / reconnect cycles while media plays; every cycle must recover. With the injected defect: 0/50.</p><em>Endurance: recovery rate, not one try</em></article>
-              <article><span>08</span><h4>Incoming call &amp; media recovery</h4><p>Play → incoming call pauses the media → play is refused → answer → hang up. Media must resume by itself.</p><em>Audio focus and recovery</em></article>
-            </div>
-          </section>
-
-          <section class="doc-card" id="doc-defect"><div class="section-heading"><div><small>05 · DEFECT &amp; ROOT CAUSE</small><h3>A failure you can reproduce on demand</h3></div></div>
-            <ol class="doc-steps">
-              <li><b>Inject</b> On Validation, choose scenario 01 and enable <i>Inject a reproducible defect</i>.</li>
-              <li><b>Observe</b> The run ends in <b>Defect detected · 2/3 checks passed</b>: the phone reconnects but <code>media_playing</code> is <code>false</code> where <code>true</code> was expected.</li>
-              <li><b>Investigate</b> The Telemetry timeline shows <i>FAULT · playback failed to recover</i>: symptom, evidence and cause in one place.</li>
-              <li><b>Reproduce</b> Run it again and it fails the same way. A deterministic failure is what a developer needs to fix it.</li>
-            </ol>
-          </section>
-
-          <section class="doc-card" id="doc-tests"><div class="section-heading"><div><small>06 · AUTOMATED TEST SUITE</small><h3>Layered like a test pyramid</h3></div><span>GITHUB ACTIONS</span></div>
+          <section class="doc-card" id="doc-tests"><div class="section-heading"><div><small>04 · AUTOMATED TEST SUITE</small><h3>Layered like a test pyramid</h3></div><span>GITHUB ACTIONS</span></div>
             <table class="doc-table"><thead><tr><th>Layer</th><th>File</th><th>Covers</th></tr></thead><tbody>
               <tr><td>Unit</td><td><code>test_cockpit.py</code></td><td>state machine and every interlock</td></tr>
               <tr><td>Unit</td><td><code>test_qa_runner.py</code></td><td>scenarios report PASS / FAIL correctly</td></tr>
@@ -195,7 +169,7 @@
             <pre class="doc-code">pytest -m "not selenium and not appium and not aaos_live"</pre>
           </section>
 
-          <section class="doc-card" id="doc-api"><div class="section-heading"><div><small>07 · API</small><h3>Endpoints</h3></div></div>
+          <section class="doc-card" id="doc-api"><div class="section-heading"><div><small>05 · API</small><h3>Endpoints</h3></div></div>
             <table class="doc-table"><tbody>
               <tr><td><code>GET /api/state</code></td><td>full vehicle and head-unit state</td></tr>
               <tr><td><code>POST /api/events</code></td><td>send a command: <code>gear_set</code>, <code>speed_set</code>, <code>reverse_toggle</code>, <code>door_toggle</code>, <code>phone_disconnect</code>, <code>play</code>, <code>fault_toggle</code>…</td></tr>
@@ -206,7 +180,7 @@
             </tbody></table>
           </section>
 
-          <section class="doc-card" id="doc-decisions"><div class="section-heading"><div><small>08 · DESIGN DECISIONS</small><h3>Architecture Decision Records</h3></div></div>
+          <section class="doc-card" id="doc-decisions"><div class="section-heading"><div><small>06 · DESIGN DECISIONS</small><h3>Architecture Decision Records</h3></div></div>
             <p>The reasoning behind each choice is recorded as an ADR in <code>docs/adr/</code>:</p>
             <ul class="doc-list">
               <li>Zero-dependency Python backend</li><li>Deterministic state machine as single source of truth</li><li>Safety interlocks as refused commands</li><li>In-process QA runner with evidence</li><li>Fault injection as simulator state</li><li>HTTP polling over WebSockets</li><li>Real AAOS via ADB as a separate track</li><li>Hardware adapters as API clients</li><li>Layered test strategy</li><li>Honest simulation and brand boundaries</li><li>pytest runner and CI/CD with a Deploy Hook</li><li>Seeded monkey testing for safety invariants</li>
